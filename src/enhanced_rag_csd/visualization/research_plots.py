@@ -813,3 +813,86 @@ class ResearchPlotter:
             f.write('\n'.join(summary_lines))
         
         return str(summary_path)
+    
+    def plot_benchmark_comparison(self, benchmark_data: Dict[str, Any], benchmark_name: str) -> str:
+        """Create benchmark-specific comparison plots."""
+        
+        fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(16, 12))
+        fig.suptitle(f'{benchmark_name} Benchmark Results', fontsize=16, fontweight='bold')
+        
+        systems = list(benchmark_data.keys())
+        
+        # Extract metrics
+        latencies = [benchmark_data[sys].get('avg_latency', 0) * 1000 for sys in systems]
+        throughputs = [benchmark_data[sys].get('throughput', 0) for sys in systems]
+        relevance_scores = [benchmark_data[sys].get('avg_relevance_score', 0) for sys in systems]
+        cache_hit_rates = [benchmark_data[sys].get('cache_hit_rate', 0) * 100 for sys in systems]
+        
+        # Plot 1: Latency comparison
+        bars1 = ax1.bar(systems, latencies, color=[self.system_colors.get(sys, '#808080') for sys in systems])
+        ax1.set_title('Average Query Latency')
+        ax1.set_ylabel('Latency (ms)')
+        ax1.tick_params(axis='x', rotation=45)
+        
+        # Add value labels
+        for bar, val in zip(bars1, latencies):
+            ax1.text(bar.get_x() + bar.get_width()/2, bar.get_height() + max(latencies)*0.01,
+                    f'{val:.1f}ms', ha='center', va='bottom', fontsize=10)
+        
+        # Plot 2: Throughput comparison
+        bars2 = ax2.bar(systems, throughputs, color=[self.system_colors.get(sys, '#808080') for sys in systems])
+        ax2.set_title('Query Throughput')
+        ax2.set_ylabel('Queries/Second')
+        ax2.tick_params(axis='x', rotation=45)
+        
+        # Add value labels
+        for bar, val in zip(bars2, throughputs):
+            ax2.text(bar.get_x() + bar.get_width()/2, bar.get_height() + max(throughputs)*0.01,
+                    f'{val:.1f}', ha='center', va='bottom', fontsize=10)
+        
+        # Plot 3: Relevance scores
+        bars3 = ax3.bar(systems, relevance_scores, color=[self.system_colors.get(sys, '#808080') for sys in systems])
+        ax3.set_title('Average Relevance Score')
+        ax3.set_ylabel('Relevance Score (0-1)')
+        ax3.set_ylim(0, 1)
+        ax3.tick_params(axis='x', rotation=45)
+        
+        # Add value labels
+        for bar, val in zip(bars3, relevance_scores):
+            ax3.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.01,
+                    f'{val:.3f}', ha='center', va='bottom', fontsize=10)
+        
+        # Plot 4: Cache hit rates (if available)
+        if any(rate > 0 for rate in cache_hit_rates):
+            bars4 = ax4.bar(systems, cache_hit_rates, color=[self.system_colors.get(sys, '#808080') for sys in systems])
+            ax4.set_title('Cache Hit Rate')
+            ax4.set_ylabel('Hit Rate (%)')
+            ax4.set_ylim(0, 100)
+            ax4.tick_params(axis='x', rotation=45)
+            
+            # Add value labels
+            for bar, val in zip(bars4, cache_hit_rates):
+                ax4.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 1,
+                        f'{val:.1f}%', ha='center', va='bottom', fontsize=10)
+        else:
+            # Show error rates or other metric
+            error_rates = [benchmark_data[sys].get('error_rate', 0) * 100 for sys in systems]
+            bars4 = ax4.bar(systems, error_rates, color=[self.system_colors.get(sys, '#808080') for sys in systems])
+            ax4.set_title('Error Rate')
+            ax4.set_ylabel('Error Rate (%)')
+            ax4.tick_params(axis='x', rotation=45)
+            
+            # Add value labels
+            for bar, val in zip(bars4, error_rates):
+                ax4.text(bar.get_x() + bar.get_width()/2, bar.get_height() + max(error_rates)*0.01,
+                        f'{val:.1f}%', ha='center', va='bottom', fontsize=10)
+        
+        plt.tight_layout()
+        
+        # Save plot
+        filename = f"benchmark_{benchmark_name.lower().replace(' ', '_').replace('-', '_')}_comparison.pdf"
+        file_path = self.output_dir / filename
+        plt.savefig(file_path, format='pdf', bbox_inches='tight', dpi=300)
+        plt.close()
+        
+        return str(file_path)
