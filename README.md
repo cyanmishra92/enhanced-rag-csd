@@ -398,7 +398,7 @@ If you use Enhanced RAG-CSD in your research, please cite:
 ```bibtex
 @software{enhanced_rag_csd,
   title = {Enhanced RAG-CSD: Software-Only RAG with CSD Emulation},
-  author = {Your Name},
+  author = {Cyan Subhra Mishra},
   year = {2024},
   url = {https://github.com/yourusername/enhanced-rag-csd}
 }
