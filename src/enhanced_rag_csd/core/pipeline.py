@@ -11,10 +11,10 @@ from concurrent.futures import ThreadPoolExecutor, Future
 from dataclasses import dataclass
 import numpy as np
 
-from enhanced_rag_csd.embedding.encoder import EmbeddingEncoder
+from enhanced_rag_csd.core.encoder import Encoder
 from enhanced_rag_csd.retrieval.incremental_index import IncrementalVectorStore
-from enhanced_rag_csd.augmentation.augmentor import QueryAugmentor
-from enhanced_rag_csd.csd.enhanced_simulator import EnhancedCSDSimulator
+from enhanced_rag_csd.core.augmentor import Augmentor
+from enhanced_rag_csd.core.csd_emulator import EnhancedCSDSimulator
 from enhanced_rag_csd.utils.logger import get_logger
 from enhanced_rag_csd.utils.metrics import MetricsCollector
 from enhanced_rag_csd.utils.embedding_cache import get_embedding_cache
@@ -148,7 +148,7 @@ class EnhancedRAGPipeline:
             self.embedding_cache = get_embedding_cache()
         
         # Embedding encoder
-        self.encoder = EmbeddingEncoder({"model": self.config.embedding_model})
+        self.encoder = Encoder({"model": self.config.embedding_model})
         
         # Incremental vector store
         self.vector_store = IncrementalVectorStore(
@@ -174,7 +174,7 @@ class EnhancedRAGPipeline:
             self.csd_simulator = None
         
         # Query augmentor
-        self.augmentor = QueryAugmentor()
+        self.augmentor = Augmentor()
         
         # Text processor
         self.text_processor = get_text_processor()
