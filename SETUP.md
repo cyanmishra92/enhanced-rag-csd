@@ -228,6 +228,20 @@ pytest -v
 ### 4. Run Demo
 
 ```bash
+# Run standalone performance demo (2 seconds)
+python scripts/standalone_demo.py
+
+# Expected output:
+# 🎯 Key Demo Results:
+#    🚀 4.6x faster query processing
+#    ⚡ 4.7x higher throughput
+#    🧠 60.0% memory reduction
+#    🎯 86.7% relevance accuracy
+#    💾 60.0% cache hit rate
+
+# Run quick benchmark validation (3-5 minutes)
+python scripts/run_and_plot_benchmark.py --quick
+
 # Run interactive demo
 python examples/demo.py --test
 
