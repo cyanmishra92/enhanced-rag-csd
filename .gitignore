@@ -166,6 +166,8 @@ data/
 !data/sample/
 !data/benchmarks/
 results/
+!results/standalone_benchmark/
+!results/public_benchmark/
 logs/
 *.log
 
