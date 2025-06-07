@@ -7,6 +7,12 @@ This guide will help you get up and running with Enhanced RAG-CSD in minutes.
 ### 1. Installation
 
 ```bash
+# Clone and install from source (recommended)
+git clone https://github.com/yourusername/enhanced-rag-csd.git
+cd enhanced-rag-csd
+pip install -e .
+
+# OR install from PyPI (when available)
 pip install enhanced-rag-csd
 ```
 

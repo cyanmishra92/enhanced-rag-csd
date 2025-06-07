@@ -147,7 +147,7 @@ class DriftDetector:
             return 0.0
         
         recent_median = np.median(list(self.query_latencies))
-        degradation = (recent_median - self.baseline_latency) / self.baseline_latency
+        degradation = (recent_median - self.baseline_latency) / max(self.baseline_latency, 1e-10)
         
         return max(0.0, degradation)
     

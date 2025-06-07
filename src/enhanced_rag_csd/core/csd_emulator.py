@@ -391,7 +391,7 @@ class EnhancedCSDSimulator:
         elapsed = time.time() - start_time
         self.metrics.read_ops += len(indices)
         self.metrics.total_bytes_read += result.nbytes
-        self.metrics.avg_latency = elapsed / len(indices)
+        self.metrics.avg_latency = elapsed / max(len(indices), 1)
         
         return result
     

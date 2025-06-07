@@ -446,7 +446,7 @@ class SystemDataFlow:
         self.metrics.total_queries_processed += 1
         self.metrics.total_processing_time_s += processing_time
         self.metrics.avg_latency_ms = (
-            self.metrics.total_processing_time_s / self.metrics.total_queries_processed
+            self.metrics.total_processing_time_s / max(self.metrics.total_queries_processed, 1)
         ) * 1000
         self.metrics.total_data_transferred_mb += data_size_bytes / (1024 * 1024)
         

@@ -19,6 +19,7 @@ from scipy import stats
 from tqdm import tqdm
 
 from enhanced_rag_csd.utils.logger import get_logger
+from enhanced_rag_csd.utils.error_handling import safe_divide
 from enhanced_rag_csd.benchmarks.baseline_systems import (
     VanillaRAG, PipeRAGLike, EdgeRAGLike, BaseRAGSystem
 )
@@ -328,7 +329,7 @@ class EnhancedBenchmarkRunner:
                             system.query(query, top_k=top_k)
                     
                     elapsed = time.time() - start_time
-                    throughput = batch_size / elapsed
+                    throughput = safe_divide(batch_size, elapsed, default=float('inf'))
                     
                     results[system_name][batch_size] = throughput
                     logger.info(f"  Batch size {batch_size}: {throughput:.2f} queries/sec")

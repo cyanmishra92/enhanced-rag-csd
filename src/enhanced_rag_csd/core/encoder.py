@@ -303,6 +303,8 @@ class Encoder:
             # Normalize if required
             if self.normalize:
                 norms = np.linalg.norm(embeddings, axis=1, keepdims=True)
+                # Avoid division by zero by replacing zero norms with 1
+                norms = np.where(norms == 0, 1, norms)
                 embeddings = embeddings / norms
             
             return embeddings
