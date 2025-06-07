@@ -45,9 +45,41 @@ class CSDBackendManager:
         except ImportError as e:
             logger.warning(f"SPDK emulator backend not available: {e}")
         
-        # Future backends can be added here
+        # Mock SPDK for testing (always try to register)
+        try:
+            from .mock_spdk import MockSPDKEmulatorBackend
+            self._backends[CSDBackendType.MOCK_SPDK] = MockSPDKEmulatorBackend
+            logger.info("Mock SPDK emulator backend registered for testing")
+        except ImportError as e:
+            logger.warning(f"Mock SPDK backend not available: {e}")
+        
+        # Next-generation emulator backends
+        try:
+            from .opencsd_backend import OpenCSDBackend
+            self._backends[CSDBackendType.OPENCSD_EMULATOR] = OpenCSDBackend
+            logger.info("OpenCSD emulator backend registered")
+        except ImportError as e:
+            logger.warning(f"OpenCSD backend not available: {e}")
+        
+        try:
+            from .spdk_vfio_user_backend import SPDKVfioUserBackend
+            self._backends[CSDBackendType.SPDK_VFIO_USER] = SPDKVfioUserBackend
+            logger.info("SPDK vfio-user backend registered")
+        except ImportError as e:
+            logger.warning(f"SPDK vfio-user backend not available: {e}")
+        
+        # Hardware abstraction layer backends
+        try:
+            from .hardware_abstraction import CSDHardwareAbstractionLayer
+            self.hal = CSDHardwareAbstractionLayer()
+            logger.info("Hardware abstraction layer initialized")
+        except ImportError as e:
+            logger.warning(f"Hardware abstraction layer not available: {e}")
+        
+        # Placeholder for future backends
+        # self._backends[CSDBackendType.FEMU_SMARTSSD] = FEMUSmartSSDBackend
         # self._backends[CSDBackendType.FIRESIM_FPGA] = FireSimBackend
-        # self._backends[CSDBackendType.CUSTOM_HARDWARE] = CustomHardwareBackend
+        # self._backends[CSDBackendType.GPU_ACCELERATED] = GPUAcceleratedBackend
     
     def _check_backend_availability(self) -> None:
         """Check availability of all registered backends."""
@@ -215,11 +247,23 @@ class CSDBackendManager:
         except ValueError:
             logger.warning(f"Invalid backend type specified: {user_preference}")
         
-        # Priority order for automatic selection
+        # Priority order for automatic selection (next-gen first)
         priority_order = [
-            CSDBackendType.SPDK_EMULATOR,  # Most accurate
-            CSDBackendType.ENHANCED_SIMULATOR,  # Always available fallback
+            CSDBackendType.OPENCSD_EMULATOR,     # Real eBPF computational offloading
+            CSDBackendType.SPDK_VFIO_USER,       # High-performance shared memory
+            CSDBackendType.SPDK_EMULATOR,        # Real SPDK emulation
+            CSDBackendType.MOCK_SPDK,            # Enhanced testing backend
+            CSDBackendType.ENHANCED_SIMULATOR,   # Always available fallback
         ]
+        
+        # Use hardware abstraction layer if available
+        if hasattr(self, 'hal'):
+            try:
+                hal_recommendation = self.hal.get_optimal_backend(config)
+                if self.get_backend_status(hal_recommendation) == BackendStatus.AVAILABLE:
+                    return hal_recommendation
+            except Exception as e:
+                logger.debug(f"HAL recommendation failed: {e}")
         
         for backend_type in priority_order:
             if self.get_backend_status(backend_type) == BackendStatus.AVAILABLE:

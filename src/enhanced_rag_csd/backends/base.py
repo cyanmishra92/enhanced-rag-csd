@@ -10,10 +10,23 @@ import numpy as np
 
 class CSDBackendType(Enum):
     """Available CSD backend implementations."""
+    # Current implementations
     ENHANCED_SIMULATOR = "enhanced_simulator"
     SPDK_EMULATOR = "spdk_emulator"
-    FIRESIM_FPGA = "firesim_fpga"
-    CUSTOM_HARDWARE = "custom_hardware"
+    MOCK_SPDK = "mock_spdk"
+    
+    # Next-generation emulator backends
+    OPENCSD_EMULATOR = "opencsd_emulator"        # OpenCSD with eBPF computational offloading
+    FEMU_SMARTSSD = "femu_smartssd"              # FEMU SmartSSD computational storage
+    SPDK_VFIO_USER = "spdk_vfio_user"            # SPDK + vfio-user high-performance
+    SNIA_STANDARD = "snia_standard"              # SNIA API-compliant backend
+    QEMU_CSD = "qemu_csd"                        # Generic QEMU-based CSD
+    
+    # Hardware-specific backends
+    FIRESIM_FPGA = "firesim_fpga"                # FPGA-based acceleration
+    CUSTOM_HARDWARE = "custom_hardware"          # Custom accelerator hardware
+    DPU_ACCELERATED = "dpu_accelerated"          # Data Processing Unit acceleration
+    GPU_ACCELERATED = "gpu_accelerated"          # GPU computational storage
 
 
 class CSDBackendInterface(ABC):
@@ -142,3 +155,43 @@ class CSDBackendInterface(ABC):
             "description": self.__class__.__doc__ or "No description available",
             "config": self.config
         }
+    
+    def offload_computation(self, computation_type: str, data: np.ndarray, 
+                           metadata: Dict[str, Any]) -> np.ndarray:
+        """
+        Generic computational offloading interface for next-gen CSD backends.
+        
+        Args:
+            computation_type: Type of computation ("embedding", "similarity", "augmentation", "custom")
+            data: Input data for computation
+            metadata: Computation parameters and context
+            
+        Returns:
+            Result of computation
+        """
+        # Default implementation falls back to specific methods
+        if computation_type == "similarity":
+            candidate_indices = metadata.get("candidate_indices", [])
+            return self.compute_similarities(data, candidate_indices)
+        elif computation_type == "era_pipeline":
+            return self.process_era_pipeline(data, metadata)
+        else:
+            raise NotImplementedError(f"Computation type '{computation_type}' not implemented in base class")
+    
+    def get_accelerator_info(self) -> Dict[str, Any]:
+        """Get information about underlying accelerator hardware/emulation."""
+        return {
+            "accelerator_type": "software_simulation",
+            "compute_units": 1,
+            "memory_hierarchy": "system_memory",
+            "supports_parallel": False,
+            "supports_offloading": False
+        }
+    
+    def supports_feature(self, feature: str) -> bool:
+        """Check if backend supports specific next-gen CSD features."""
+        base_features = {
+            "basic_storage", "basic_retrieval", "basic_similarity",
+            "era_pipeline", "p2p_transfer", "metrics"
+        }
+        return feature in base_features

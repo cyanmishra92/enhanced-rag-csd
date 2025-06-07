@@ -321,11 +321,11 @@ class SPDKEmulatorBackend(CSDBackendInterface):
                 return bytes.fromhex(result["data"])
             else:
                 # Return zeros if read fails
-                return b'\\x00' * size
+                return b'\x00' * size
                 
         except Exception as e:
             logger.error(f"NVMe read failed: {e}")
-            return b'\\x00' * size
+            return b'\x00' * size
     
     def compute_similarities(self, query_embedding: np.ndarray, 
                            candidate_indices: List[int]) -> np.ndarray:
@@ -444,7 +444,7 @@ class SPDKEmulatorBackend(CSDBackendInterface):
                 return False
             
             # Check for libvfio-user
-            if not os.path.exists("/usr/lib/libvfio-user.so") and \\
+            if not os.path.exists("/usr/lib/libvfio-user.so") and \
                not os.path.exists("/usr/local/lib/libvfio-user.so"):
                 logger.warning("libvfio-user not found")
                 return False
