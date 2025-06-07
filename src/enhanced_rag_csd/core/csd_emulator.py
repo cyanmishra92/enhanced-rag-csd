@@ -472,9 +472,17 @@ class EnhancedCSDSimulator:
     def _compute_batch_similarities(self, query: np.ndarray, 
                                   candidates: np.ndarray) -> List[float]:
         """Compute similarities for a batch."""
-        # Normalize vectors
-        query_norm = query / np.linalg.norm(query)
-        candidates_norm = candidates / np.linalg.norm(candidates, axis=1, keepdims=True)
+        # Normalize vectors with zero-norm handling
+        query_norm_val = np.linalg.norm(query)
+        if query_norm_val > 0:
+            query_norm = query / query_norm_val
+        else:
+            query_norm = query
+        
+        candidates_norms = np.linalg.norm(candidates, axis=1, keepdims=True)
+        # Handle zero norms by replacing with 1 to avoid division by zero
+        candidates_norms = np.where(candidates_norms == 0, 1, candidates_norms)
+        candidates_norm = candidates / candidates_norms
         
         # Compute cosine similarities
         similarities = np.dot(candidates_norm, query_norm)

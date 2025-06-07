@@ -1,0 +1,605 @@
+{
+  "test_timestamp": "2025-06-07T13:06:01.919347",
+  "traditional_csd": {
+    "document_addition": {
+      "time": 0.019867658615112305,
+      "documents": 10,
+      "chunks": 10
+    },
+    "queries": [
+      {
+        "query": "How is AI being used in medical diagnostics?",
+        "processing_time": 0.006818056106567383,
+        "result": {
+          "query": "How is AI being used in medical diagnostics?",
+          "augmented_query": "How is AI being used in medical diagnostics?\n\nArtificial intelligence is transforming healthcare through advanced diagnostic tools and personalized treatment plans.\n\nClinical decision support systems integrate AI to assist doctors in making informed diagnoses.\n\nMachine learning algorithms are being used to analyze medical images and detect diseases early.",
+          "retrieved_docs": [
+            {
+              "chunk": "Artificial intelligence is transforming healthcare through advanced diagnostic tools and personalized treatment plans.",
+              "metadata": {
+                "doc_id": 0,
+                "chunk_id": 0
+              },
+              "score": 0.6792638301849365,
+              "source": "delta_20250607_130558"
+            },
+            {
+              "chunk": "Clinical decision support systems integrate AI to assist doctors in making informed diagnoses.",
+              "metadata": {
+                "doc_id": 8,
+                "chunk_id": 0
+              },
+              "score": 0.6637166142463684,
+              "source": "delta_20250607_130558"
+            },
+            {
+              "chunk": "Machine learning algorithms are being used to analyze medical images and detect diseases early.",
+              "metadata": {
+                "doc_id": 1,
+                "chunk_id": 0
+              },
+              "score": 0.5973343253135681,
+              "source": "delta_20250607_130558"
+            }
+          ],
+          "top_k": 3,
+          "pipeline_parallel": true,
+          "processing_time": 0.006803750991821289,
+          "strategy": {
+            "mode": "sync",
+            "prefetch": false,
+            "batch_size": 1,
+            "cache_priority": "latency"
+          }
+        }
+      },
+      {
+        "query": "What are the applications of machine learning in healthcare?",
+        "processing_time": 0.0030517578125,
+        "result": {
+          "query": "What are the applications of machine learning in healthcare?",
+          "augmented_query": "What are the applications of machine learning in healthcare?\n\nMachine learning algorithms are being used to analyze medical images and detect diseases early.\n\nArtificial intelligence is transforming healthcare through advanced diagnostic tools and personalized treatment plans.\n\nDeep learning models can process large datasets to identify patterns in patient health records.",
+          "retrieved_docs": [
+            {
+              "chunk": "Machine learning algorithms are being used to analyze medical images and detect diseases early.",
+              "metadata": {
+                "doc_id": 1,
+                "chunk_id": 0
+              },
+              "score": 0.7120708227157593,
+              "source": "delta_20250607_130558"
+            },
+            {
+              "chunk": "Artificial intelligence is transforming healthcare through advanced diagnostic tools and personalized treatment plans.",
+              "metadata": {
+                "doc_id": 0,
+                "chunk_id": 0
+              },
+              "score": 0.5700349807739258,
+              "source": "delta_20250607_130558"
+            },
+            {
+              "chunk": "Deep learning models can process large datasets to identify patterns in patient health records.",
+              "metadata": {
+                "doc_id": 2,
+                "chunk_id": 0
+              },
+              "score": 0.5285124778747559,
+              "source": "delta_20250607_130558"
+            }
+          ],
+          "top_k": 3,
+          "pipeline_parallel": true,
+          "processing_time": 0.003043651580810547,
+          "strategy": {
+            "mode": "sync",
+            "prefetch": false,
+            "batch_size": 1,
+            "cache_priority": "latency"
+          }
+        }
+      },
+      {
+        "query": "How does deep learning help with patient data analysis?",
+        "processing_time": 0.0028541088104248047,
+        "result": {
+          "query": "How does deep learning help with patient data analysis?",
+          "augmented_query": "How does deep learning help with patient data analysis?\n\nDeep learning models can process large datasets to identify patterns in patient health records.\n\nMachine learning algorithms are being used to analyze medical images and detect diseases early.\n\nElectronic health records with AI capabilities improve patient data management and analysis.",
+          "retrieved_docs": [
+            {
+              "chunk": "Deep learning models can process large datasets to identify patterns in patient health records.",
+              "metadata": {
+                "doc_id": 2,
+                "chunk_id": 0
+              },
+              "score": 0.7183179259300232,
+              "source": "delta_20250607_130558"
+            },
+            {
+              "chunk": "Machine learning algorithms are being used to analyze medical images and detect diseases early.",
+              "metadata": {
+                "doc_id": 1,
+                "chunk_id": 0
+              },
+              "score": 0.5240117311477661,
+              "source": "delta_20250607_130558"
+            },
+            {
+              "chunk": "Electronic health records with AI capabilities improve patient data management and analysis.",
+              "metadata": {
+                "doc_id": 9,
+                "chunk_id": 0
+              },
+              "score": 0.4851505756378174,
+              "source": "delta_20250607_130558"
+            }
+          ],
+          "top_k": 3,
+          "pipeline_parallel": true,
+          "processing_time": 0.0028460025787353516,
+          "strategy": {
+            "mode": "sync",
+            "prefetch": false,
+            "batch_size": 1,
+            "cache_priority": "latency"
+          }
+        }
+      },
+      {
+        "query": "What role does NLP play in medical practice?",
+        "processing_time": 0.0025141239166259766,
+        "result": {
+          "query": "What role does NLP play in medical practice?",
+          "augmented_query": "What role does NLP play in medical practice?\n\nNatural language processing helps doctors analyze patient symptoms and medical literature.\n\nClinical decision support systems integrate AI to assist doctors in making informed diagnoses.\n\nElectronic health records with AI capabilities improve patient data management and analysis.",
+          "retrieved_docs": [
+            {
+              "chunk": "Natural language processing helps doctors analyze patient symptoms and medical literature.",
+              "metadata": {
+                "doc_id": 3,
+                "chunk_id": 0
+              },
+              "score": 0.6466811895370483,
+              "source": "delta_20250607_130558"
+            },
+            {
+              "chunk": "Clinical decision support systems integrate AI to assist doctors in making informed diagnoses.",
+              "metadata": {
+                "doc_id": 8,
+                "chunk_id": 0
+              },
+              "score": 0.3723328411579132,
+              "source": "delta_20250607_130558"
+            },
+            {
+              "chunk": "Electronic health records with AI capabilities improve patient data management and analysis.",
+              "metadata": {
+                "doc_id": 9,
+                "chunk_id": 0
+              },
+              "score": 0.36955559253692627,
+              "source": "delta_20250607_130558"
+            }
+          ],
+          "top_k": 3,
+          "pipeline_parallel": true,
+          "processing_time": 0.0025069713592529297,
+          "strategy": {
+            "mode": "sync",
+            "prefetch": false,
+            "batch_size": 1,
+            "cache_priority": "latency"
+          }
+        }
+      },
+      {
+        "query": "How is computer vision used in radiology?",
+        "processing_time": 0.002412080764770508,
+        "result": {
+          "query": "How is computer vision used in radiology?",
+          "augmented_query": "How is computer vision used in radiology?\n\nComputer vision technology assists radiologists in identifying anomalies in X-rays and MRI scans.\n\nMachine learning algorithms are being used to analyze medical images and detect diseases early.\n\nRobotic surgery systems provide precision and minimize invasive procedures for patients.",
+          "retrieved_docs": [
+            {
+              "chunk": "Computer vision technology assists radiologists in identifying anomalies in X-rays and MRI scans.",
+              "metadata": {
+                "doc_id": 4,
+                "chunk_id": 0
+              },
+              "score": 0.6356310844421387,
+              "source": "delta_20250607_130558"
+            },
+            {
+              "chunk": "Machine learning algorithms are being used to analyze medical images and detect diseases early.",
+              "metadata": {
+                "doc_id": 1,
+                "chunk_id": 0
+              },
+              "score": 0.48004150390625,
+              "source": "delta_20250607_130558"
+            },
+            {
+              "chunk": "Robotic surgery systems provide precision and minimize invasive procedures for patients.",
+              "metadata": {
+                "doc_id": 6,
+                "chunk_id": 0
+              },
+              "score": 0.3471609652042389,
+              "source": "delta_20250607_130558"
+            }
+          ],
+          "top_k": 3,
+          "pipeline_parallel": true,
+          "processing_time": 0.002404451370239258,
+          "strategy": {
+            "mode": "sync",
+            "prefetch": false,
+            "batch_size": 1,
+            "cache_priority": "latency"
+          }
+        }
+      }
+    ],
+    "statistics": {
+      "vector_store": {
+        "total_vectors": 10,
+        "main_index_vectors": 0,
+        "delta_indices_count": 1,
+        "delta_vectors": 10,
+        "version_count": 0,
+        "storage_path": "./test_results/traditional_storage/vectors"
+      },
+      "metrics": {
+        "counters": {
+          "documents_processed": 10,
+          "cache_hits": 5,
+          "queries_processed": 5
+        },
+        "timing_stats": {
+          "add_documents": {
+            "count": 1,
+            "mean": 0.01983499526977539,
+            "median": 0.01983499526977539,
+            "min": 0.01983499526977539,
+            "max": 0.01983499526977539,
+            "std": 0
+          },
+          "query": {
+            "count": 5,
+            "mean": 0.003520965576171875,
+            "median": 0.0028460025787353516,
+            "min": 0.002404451370239258,
+            "max": 0.006803750991821289,
+            "std": 0.0018530294133709262
+          }
+        }
+      },
+      "config": {
+        "csd_emulation": true,
+        "pipeline_parallel": true,
+        "caching": true,
+        "system_data_flow": false
+      },
+      "csd_metrics": {
+        "read_ops": 50,
+        "write_ops": 10,
+        "cache_hit_rate": 0.7999999999984,
+        "total_bytes_read": 76800,
+        "total_bytes_written": 15360,
+        "avg_latency_ms": 0.004315376281738281,
+        "storage_usage_mb": 1.46484375
+      }
+    }
+  },
+  "system_data_flow": {
+    "document_addition": {
+      "time": 0.01094961166381836,
+      "documents": 10,
+      "chunks": 10
+    },
+    "queries": [
+      {
+        "query": "How is AI being used in medical diagnostics?",
+        "processing_time": 0.10851287841796875,
+        "result": {
+          "query": "How is AI being used in medical diagnostics?",
+          "augmented_query": "System processed: How is AI being used in medical diagnostics? with 3072 bytes",
+          "retrieved_docs": 3,
+          "top_k": 3,
+          "system_data_flow": true,
+          "generation_time_ms": 100.54564476013184,
+          "data_flow_path": "DRAM\u2192CSD\u2192GPU",
+          "processing_time": 0.10846519470214844,
+          "strategy": {
+            "mode": "sync",
+            "prefetch": false,
+            "batch_size": 1,
+            "cache_priority": "latency"
+          }
+        },
+        "data_flow_path": "DRAM\u2192CSD\u2192GPU"
+      },
+      {
+        "query": "What are the applications of machine learning in healthcare?",
+        "processing_time": 0.11016440391540527,
+        "result": {
+          "query": "What are the applications of machine learning in healthcare?",
+          "augmented_query": "System processed: What are the applications of machine learning in healthcare? with 3072 bytes",
+          "retrieved_docs": 3,
+          "top_k": 3,
+          "system_data_flow": true,
+          "generation_time_ms": 100.7537841796875,
+          "data_flow_path": "DRAM\u2192CSD\u2192GPU",
+          "processing_time": 0.11013317108154297,
+          "strategy": {
+            "mode": "sync",
+            "prefetch": false,
+            "batch_size": 1,
+            "cache_priority": "latency"
+          }
+        },
+        "data_flow_path": "DRAM\u2192CSD\u2192GPU"
+      },
+      {
+        "query": "How does deep learning help with patient data analysis?",
+        "processing_time": 0.11119270324707031,
+        "result": {
+          "query": "How does deep learning help with patient data analysis?",
+          "augmented_query": "System processed: How does deep learning help with patient data analysis? with 3072 bytes",
+          "retrieved_docs": 3,
+          "top_k": 3,
+          "system_data_flow": true,
+          "generation_time_ms": 101.23991966247559,
+          "data_flow_path": "DRAM\u2192CSD\u2192GPU",
+          "processing_time": 0.11115598678588867,
+          "strategy": {
+            "mode": "sync",
+            "prefetch": false,
+            "batch_size": 1,
+            "cache_priority": "latency"
+          }
+        },
+        "data_flow_path": "DRAM\u2192CSD\u2192GPU"
+      },
+      {
+        "query": "What role does NLP play in medical practice?",
+        "processing_time": 0.11117887496948242,
+        "result": {
+          "query": "What role does NLP play in medical practice?",
+          "augmented_query": "System processed: What role does NLP play in medical practice? with 3072 bytes",
+          "retrieved_docs": 3,
+          "top_k": 3,
+          "system_data_flow": true,
+          "generation_time_ms": 102.01263427734375,
+          "data_flow_path": "DRAM\u2192CSD\u2192GPU",
+          "processing_time": 0.11115169525146484,
+          "strategy": {
+            "mode": "sync",
+            "prefetch": false,
+            "batch_size": 1,
+            "cache_priority": "latency"
+          }
+        },
+        "data_flow_path": "DRAM\u2192CSD\u2192GPU"
+      },
+      {
+        "query": "How is computer vision used in radiology?",
+        "processing_time": 0.11106753349304199,
+        "result": {
+          "query": "How is computer vision used in radiology?",
+          "augmented_query": "System processed: How is computer vision used in radiology? with 3072 bytes",
+          "retrieved_docs": 3,
+          "top_k": 3,
+          "system_data_flow": true,
+          "generation_time_ms": 101.99451446533203,
+          "data_flow_path": "DRAM\u2192CSD\u2192GPU",
+          "processing_time": 0.11103940010070801,
+          "strategy": {
+            "mode": "sync",
+            "prefetch": false,
+            "batch_size": 1,
+            "cache_priority": "latency"
+          }
+        },
+        "data_flow_path": "DRAM\u2192CSD\u2192GPU"
+      }
+    ],
+    "statistics": {
+      "vector_store": {
+        "total_vectors": 10,
+        "main_index_vectors": 0,
+        "delta_indices_count": 1,
+        "delta_vectors": 10,
+        "version_count": 0,
+        "storage_path": "./test_results/systemdf_storage/vectors"
+      },
+      "metrics": {
+        "counters": {
+          "documents_processed": 10,
+          "cache_hits": 5,
+          "queries_processed": 5
+        },
+        "timing_stats": {
+          "add_documents": {
+            "count": 1,
+            "mean": 0.010926485061645508,
+            "median": 0.010926485061645508,
+            "min": 0.010926485061645508,
+            "max": 0.010926485061645508,
+            "std": 0
+          },
+          "query": {
+            "count": 5,
+            "mean": 0.11038908958435059,
+            "median": 0.11103940010070801,
+            "min": 0.10846519470214844,
+            "max": 0.11115598678588867,
+            "std": 0.0011575262725711346
+          }
+        }
+      },
+      "config": {
+        "csd_emulation": true,
+        "pipeline_parallel": true,
+        "caching": true,
+        "system_data_flow": true
+      },
+      "csd_metrics": {
+        "read_ops": 0,
+        "write_ops": 10,
+        "cache_hit_rate": 0.0,
+        "total_bytes_read": 0,
+        "total_bytes_written": 15360,
+        "avg_latency_ms": 0.0,
+        "storage_usage_mb": 1.46484375,
+        "system_memory": {
+          "memory_subsystems": {
+            "dram": {
+              "type": "dram",
+              "capacity_mb": 16384.0,
+              "allocated_mb": 0.0,
+              "utilization_percent": 0.0,
+              "num_allocations": 0,
+              "bandwidth_mbps": 51200
+            },
+            "gpu": {
+              "type": "gpu",
+              "capacity_mb": 8192.0,
+              "allocated_mb": 0.0,
+              "utilization_percent": 0.0,
+              "num_allocations": 0,
+              "bandwidth_mbps": 900000
+            },
+            "csd": {
+              "type": "csd",
+              "capacity_mb": 4096.0,
+              "allocated_mb": 0.0,
+              "utilization_percent": 0.0,
+              "num_allocations": 0,
+              "bandwidth_mbps": 15750
+            }
+          },
+          "system_bus": {
+            "total_transfers": 0,
+            "total_bytes_mb": 0.0,
+            "total_transfer_time_s": 0.0,
+            "avg_bandwidth_mbps": 0.0,
+            "p2p_transfers": 0,
+            "pcie_transfers": 0
+          },
+          "config": {
+            "p2p_enabled": true,
+            "dram_capacity_mb": 16384,
+            "gpu_memory_mb": 8192,
+            "csd_memory_mb": 4096
+          },
+          "system_summary": {
+            "total_capacity_mb": 28672,
+            "total_allocated_mb": 0.0,
+            "system_utilization_percent": 0.0
+          }
+        }
+      },
+      "system_data_flow_metrics": {
+        "data_flow_metrics": {
+          "total_queries_processed": 5,
+          "avg_latency_ms": 110.13936996459961,
+          "total_processing_time_s": 0.550696849822998,
+          "dram_to_csd_time_s": 0.0017101764678955078,
+          "csd_processing_time_s": 0.03906607627868652,
+          "csd_to_gpu_time_s": 0.002031087875366211,
+          "total_data_transferred_mb": 0.00732421875,
+          "p2p_transfers": 5,
+          "pcie_transfers": 5
+        },
+        "memory_metrics": {
+          "memory_subsystems": {
+            "dram": {
+              "type": "dram",
+              "capacity_mb": 16384.0,
+              "allocated_mb": 0.0,
+              "utilization_percent": 0.0,
+              "num_allocations": 0,
+              "bandwidth_mbps": 51200
+            },
+            "gpu": {
+              "type": "gpu",
+              "capacity_mb": 8192.0,
+              "allocated_mb": 0.0,
+              "utilization_percent": 0.0,
+              "num_allocations": 0,
+              "bandwidth_mbps": 900000
+            },
+            "csd": {
+              "type": "csd",
+              "capacity_mb": 4096.0,
+              "allocated_mb": 0.0,
+              "utilization_percent": 0.0,
+              "num_allocations": 0,
+              "bandwidth_mbps": 15750
+            }
+          },
+          "system_bus": {
+            "total_transfers": 10,
+            "total_bytes_mb": 0.02197265625,
+            "total_transfer_time_s": 0.0029311180114746094,
+            "avg_bandwidth_mbps": 7.496339677891655,
+            "p2p_transfers": 5,
+            "pcie_transfers": 5
+          },
+          "config": {
+            "p2p_enabled": true,
+            "dram_capacity_mb": 16384,
+            "gpu_memory_mb": 8192,
+            "csd_memory_mb": 4096
+          },
+          "system_summary": {
+            "total_capacity_mb": 28672,
+            "total_allocated_mb": 0.0,
+            "system_utilization_percent": 0.0
+          }
+        },
+        "system_config": {
+          "async_processing": true,
+          "p2p_enabled": true,
+          "pipeline_depth": 3
+        }
+      }
+    }
+  },
+  "batch_processing": {
+    "batch_time": 0.014024019241333008,
+    "individual_total": 0.5677309036254883,
+    "speedup": 40.48275275836861,
+    "batch_results": [
+      {
+        "query": "How is AI being used in medical diagnostics?",
+        "augmented_query": "How is AI being used in medical diagnostics?\n\nArtificial intelligence is transforming healthcare through advanced diagnostic tools and personalized treatment plans.\n\nClinical decision support systems integrate AI to assist doctors in making informed diagnoses.\n\nMachine learning algorithms are being used to analyze medical images and detect diseases early.",
+        "retrieved_docs": 3,
+        "top_k": 3
+      },
+      {
+        "query": "What are the applications of machine learning in healthcare?",
+        "augmented_query": "What are the applications of machine learning in healthcare?\n\nMachine learning algorithms are being used to analyze medical images and detect diseases early.\n\nArtificial intelligence is transforming healthcare through advanced diagnostic tools and personalized treatment plans.\n\nDeep learning models can process large datasets to identify patterns in patient health records.",
+        "retrieved_docs": 3,
+        "top_k": 3
+      },
+      {
+        "query": "How does deep learning help with patient data analysis?",
+        "augmented_query": "How does deep learning help with patient data analysis?\n\nDeep learning models can process large datasets to identify patterns in patient health records.\n\nMachine learning algorithms are being used to analyze medical images and detect diseases early.\n\nElectronic health records with AI capabilities improve patient data management and analysis.",
+        "retrieved_docs": 3,
+        "top_k": 3
+      },
+      {
+        "query": "What role does NLP play in medical practice?",
+        "augmented_query": "What role does NLP play in medical practice?\n\nNatural language processing helps doctors analyze patient symptoms and medical literature.\n\nClinical decision support systems integrate AI to assist doctors in making informed diagnoses.\n\nElectronic health records with AI capabilities improve patient data management and analysis.",
+        "retrieved_docs": 3,
+        "top_k": 3
+      },
+      {
+        "query": "How is computer vision used in radiology?",
+        "augmented_query": "How is computer vision used in radiology?\n\nComputer vision technology assists radiologists in identifying anomalies in X-rays and MRI scans.\n\nMachine learning algorithms are being used to analyze medical images and detect diseases early.\n\nRobotic surgery systems provide precision and minimize invasive procedures for patients.",
+        "retrieved_docs": 3,
+        "top_k": 3
+      }
+    ]
+  }
+}
