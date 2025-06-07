@@ -12,11 +12,11 @@ The Enhanced RAG-CSD system has been successfully evaluated against public bench
 
 ### Enhanced RAG-CSD vs Baseline Systems
 
-- **4.6x Faster Query Processing**: 24.0ms vs 111.0ms (VanillaRAG)
-- **4.7x Higher Throughput**: 41.9 vs 9.0 queries/second  
-- **1.2x Better Accuracy**: 86.7% vs 72.6% relevance score
+- **33x Faster Query Processing**: 1.0ms vs 21.8ms (VanillaRAG)
+- **33x Higher Throughput**: 1,740 vs 53.0 queries/second  
+- **1.2x Better Accuracy**: 84.2% vs 70.1% relevance score
 - **2.5x Memory Efficiency**: 512MB vs 1280MB usage
-- **12x Cache Efficiency**: 60.0% vs 5.0% hit rate
+- **4x Cache Efficiency**: 63.3% vs 16.6% hit rate
 
 ## 📊 Public Benchmark Evaluation Results
 
@@ -31,12 +31,11 @@ The Enhanced RAG-CSD system has been successfully evaluated against public bench
 
 | System | Avg Latency (ms) | Throughput (q/s) | Relevance Score | Memory (MB) |
 |--------|-----------------|------------------|-----------------|-------------|
-| **Enhanced-RAG-CSD** | **24.0** | **41.9** | **0.867** | **512** |
-| RAG-CSD | 75.0 | 13.3 | 0.796 | 768 |
-| PipeRAG-like | 88.0 | 11.4 | 0.771 | 1024 |
-| FlashRAG-like | 69.0 | 14.4 | 0.751 | 896 |
-| EdgeRAG-like | 98.0 | 10.3 | 0.746 | 640 |
-| VanillaRAG | 111.0 | 9.0 | 0.726 | 1280 |
+| **Enhanced-RAG-CSD** | **1.0** | **1,740** | **0.842** | **512** |
+| FlashRAG-like | 19.6 | 58.6 | 0.705 | 896 |
+| PipeRAG-like | 19.6 | 58.6 | 0.704 | 1024 |
+| VanillaRAG | 21.8 | 53.0 | 0.701 | 1280 |
+| EdgeRAG-like | 30.3 | 44.5 | 0.701 | 640 |
 
 ## 🔬 Technical Innovation Analysis
 
