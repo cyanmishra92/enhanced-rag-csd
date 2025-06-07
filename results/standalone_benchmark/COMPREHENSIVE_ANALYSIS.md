@@ -1,7 +1,7 @@
 # Enhanced RAG-CSD Standalone Benchmark Results
 
-**Generated**: June 07, 2025 at 13:55:52  
-**Experiment ID**: 20250607_135550  
+**Generated**: June 07, 2025 at 14:42:10  
+**Experiment ID**: 20250607_144207  
 **Analysis Type**: Comprehensive Performance Comparison  
 
 ## Executive Summary
