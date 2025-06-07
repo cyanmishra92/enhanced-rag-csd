@@ -15,6 +15,8 @@ from enhanced_rag_csd.core.encoder import Encoder
 from enhanced_rag_csd.retrieval.incremental_index import IncrementalVectorStore
 from enhanced_rag_csd.core.augmentor import Augmentor
 from enhanced_rag_csd.core.csd_emulator import EnhancedCSDSimulator
+from enhanced_rag_csd.core.system_data_flow import SystemDataFlow, SystemDataFlowConfig
+from enhanced_rag_csd.core.system_memory import MemoryConfig
 from enhanced_rag_csd.utils.logger import get_logger
 from enhanced_rag_csd.utils.metrics import MetricsCollector
 from enhanced_rag_csd.utils.embedding_cache import get_embedding_cache
@@ -48,6 +50,7 @@ class PipelineConfig:
     # Pipeline settings
     enable_pipeline_parallel: bool = True
     flexible_retrieval_interval: int = 3
+    enable_system_data_flow: bool = False
     
     # Cache settings
     enable_caching: bool = True
@@ -167,11 +170,35 @@ class EnhancedRAGPipeline:
                     "max_parallel_ops": self.config.max_parallel_ops,
                     "ssd_bandwidth_mbps": self.config.ssd_bandwidth_mbps,
                     "nand_bandwidth_mbps": self.config.nand_bandwidth_mbps
+                },
+                "system": {
+                    "enable_integration": self.config.enable_system_data_flow,
+                    "enable_p2p": True,
+                    "csd_memory_mb": 4096,
+                    "pcie_bandwidth_mbps": 15750,
+                    "p2p_bandwidth_mbps": 12000
                 }
             }
             self.csd_simulator = EnhancedCSDSimulator(csd_config)
         else:
             self.csd_simulator = None
+        
+        # System data flow
+        if self.config.enable_system_data_flow:
+            memory_config = MemoryConfig(
+                dram_capacity_mb=16384,
+                gpu_memory_mb=8192,
+                csd_memory_mb=4096,
+                enable_p2p=True
+            )
+            system_config = SystemDataFlowConfig(
+                memory_config=memory_config,
+                enable_async_processing=True,
+                enable_prefetching=True
+            )
+            self.system_data_flow = SystemDataFlow(system_config)
+        else:
+            self.system_data_flow = None
         
         # Query augmentor
         self.augmentor = Augmentor()
@@ -195,10 +222,10 @@ class EnhancedRAGPipeline:
         all_metadata = []
         
         for doc, meta in zip(documents, metadata):
-            chunks = self.text_processor.chunk_text(
+            chunks = self.text_processor.chunk_text_optimized(
                 doc, 
                 chunk_size=chunk_size,
-                overlap=chunk_overlap
+                chunk_overlap=chunk_overlap
             )
             
             for i, chunk in enumerate(chunks):
@@ -232,7 +259,7 @@ class EnhancedRAGPipeline:
                 # Update cache and results
                 for i, idx in enumerate(uncached_indices):
                     embeddings[idx] = new_embeddings[i]
-                    self.embedding_cache.set(uncached_chunks[i], new_embeddings[i])
+                    self.embedding_cache.put(uncached_chunks[i], new_embeddings[i])
             
             embeddings = np.array(embeddings)
         else:
@@ -254,7 +281,8 @@ class EnhancedRAGPipeline:
             "chunks_per_second": len(all_chunks) / elapsed
         }
         
-        self.metrics.record("add_documents", result)
+        self.metrics.record_timing("add_documents", elapsed)
+        self.metrics.record_count("documents_processed", len(documents))
         
         return result
     
@@ -269,8 +297,10 @@ class EnhancedRAGPipeline:
         workload_type = self.workload_classifier.classify(query)
         strategy = self.workload_classifier.recommend_strategy(workload_type)
         
-        # Pipeline parallel execution if enabled
-        if self.config.enable_pipeline_parallel:
+        # Use system data flow if enabled
+        if self.config.enable_system_data_flow and self.system_data_flow is not None:
+            result = self._query_system_data_flow(query, top_k, include_metadata)
+        elif self.config.enable_pipeline_parallel:
             result = self._query_pipeline_parallel(query, top_k, include_metadata)
         else:
             result = self._query_sequential(query, top_k, include_metadata)
@@ -280,13 +310,41 @@ class EnhancedRAGPipeline:
         result["processing_time"] = elapsed
         result["strategy"] = strategy
         
-        self.metrics.record("query", {
-            "latency": elapsed,
-            "top_k": top_k,
-            "strategy": workload_type
-        })
+        self.metrics.record_timing("query", elapsed)
+        self.metrics.record_count("queries_processed")
         
         return result
+    
+    def _query_system_data_flow(self,
+                               query: str,
+                               top_k: int,
+                               include_metadata: bool) -> Dict[str, Any]:
+        """Query processing using complete system data flow."""
+        # Convert query to numpy array for system processing
+        query_embedding = self._encode_query(query)
+        query_data = query_embedding.astype(np.float32)
+        
+        query_metadata = {
+            "query_id": f"query_{int(time.time() * 1000)}",
+            "top_k": top_k,
+            "original_query": query
+        }
+        
+        # Process through system data flow
+        result = self.system_data_flow.process_query(query_data, query_metadata, async_processing=False)
+        
+        # Format result for compatibility
+        formatted_result = {
+            "query": query,
+            "augmented_query": f"System processed: {query} with {result.get('gpu_data_size_bytes', 0)} bytes",
+            "retrieved_docs": top_k if include_metadata else f"{top_k} documents retrieved",
+            "top_k": top_k,
+            "system_data_flow": True,
+            "generation_time_ms": result.get("generation_time_ms", 0),
+            "data_flow_path": result.get("data_flow", "DRAM→CSD→GPU")
+        }
+        
+        return formatted_result
     
     def _query_sequential(self, 
                          query: str,
@@ -353,15 +411,15 @@ class EnhancedRAGPipeline:
         if self.config.enable_caching:
             cached = self.embedding_cache.get(query)
             if cached is not None:
-                self.metrics.increment("cache_hits")
+                self.metrics.record_count("cache_hits")
                 return cached
             
-            self.metrics.increment("cache_misses")
+            self.metrics.record_count("cache_misses")
         
         embedding = self.encoder.encode([query])[0]
         
         if self.config.enable_caching:
-            self.embedding_cache.set(query, embedding)
+            self.embedding_cache.put(query, embedding)
         
         return embedding
     
@@ -475,12 +533,8 @@ class EnhancedRAGPipeline:
         
         elapsed = time.time() - start_time
         
-        self.metrics.record("batch_query", {
-            "num_queries": len(queries),
-            "total_time": elapsed,
-            "avg_time_per_query": elapsed / len(queries),
-            "strategy": workload_type
-        })
+        self.metrics.record_timing("batch_query", elapsed)
+        self.metrics.record_count("batch_queries_processed", len(queries))
         
         return all_results
     
@@ -488,16 +542,20 @@ class EnhancedRAGPipeline:
         """Get comprehensive pipeline statistics."""
         stats = {
             "vector_store": self.vector_store.get_statistics(),
-            "metrics": self.metrics.get_summary(),
+            "metrics": self.metrics.get_all_metrics_summary(),
             "config": {
                 "csd_emulation": self.config.enable_csd_emulation,
                 "pipeline_parallel": self.config.enable_pipeline_parallel,
-                "caching": self.config.enable_caching
+                "caching": self.config.enable_caching,
+                "system_data_flow": self.config.enable_system_data_flow
             }
         }
         
         if self.csd_simulator:
             stats["csd_metrics"] = self.csd_simulator.get_metrics()
+        
+        if self.system_data_flow:
+            stats["system_data_flow_metrics"] = self.system_data_flow.get_system_metrics()
         
         return stats
     
@@ -509,5 +567,8 @@ class EnhancedRAGPipeline:
         
         if self.csd_simulator:
             self.csd_simulator.shutdown()
+        
+        if self.system_data_flow:
+            self.system_data_flow.cleanup()
         
         logger.info("Shutdown complete")

@@ -17,6 +17,7 @@ from collections import deque
 import hashlib
 
 from enhanced_rag_csd.utils.logger import get_logger
+from enhanced_rag_csd.core.system_memory import SystemMemoryManager, MemoryType, MemoryConfig
 
 logger = get_logger(__name__)
 
@@ -267,7 +268,7 @@ class MemoryMappedStorage:
 
 
 class EnhancedCSDSimulator:
-    """Enhanced CSD simulator with realistic storage characteristics."""
+    """Enhanced CSD simulator with realistic storage characteristics and system integration."""
     
     def __init__(self, config: Dict[str, Any]):
         self.config = config
@@ -282,10 +283,27 @@ class EnhancedCSDSimulator:
         self.compute_latency_ms = config.get("csd", {}).get("compute_latency_ms", 0.1)
         self.max_parallel_ops = config.get("csd", {}).get("max_parallel_ops", 8)
         
+        # System integration settings
+        self.enable_system_integration = config.get("system", {}).get("enable_integration", False)
+        self.enable_p2p = config.get("system", {}).get("enable_p2p", True)
+        
         # Initialize components
         self.storage = MemoryMappedStorage(self.storage_path, self.embedding_dim)
         self.cache_hierarchy = CacheHierarchy()
         self.metrics = StorageMetrics()
+        
+        # Initialize system memory manager if system integration is enabled
+        if self.enable_system_integration:
+            memory_config = MemoryConfig(
+                csd_memory_mb=config.get("system", {}).get("csd_memory_mb", 4096),
+                enable_p2p=self.enable_p2p,
+                pcie_bandwidth_mbps=config.get("system", {}).get("pcie_bandwidth_mbps", 15750),
+                p2p_bandwidth_mbps=config.get("system", {}).get("p2p_bandwidth_mbps", 12000)
+            )
+            self.system_memory = SystemMemoryManager(memory_config)
+            logger.info("CSD Simulator initialized with system memory integration")
+        else:
+            self.system_memory = None
         
         # Parallel execution
         self.executor = ThreadPoolExecutor(max_workers=self.max_parallel_ops)
@@ -385,7 +403,7 @@ class EnhancedCSDSimulator:
         # Determine optimal batch size based on cache line size
         cpu_cache_line = 64  # bytes
         vectors_per_cache_line = cpu_cache_line // (self.embedding_dim * 4)
-        batch_size = max(vectors_per_cache_line, len(indices) // self.max_parallel_ops)
+        batch_size = max(1, vectors_per_cache_line, len(indices) // self.max_parallel_ops)
         
         futures = []
         for i in range(0, len(sorted_indices), batch_size):
@@ -466,12 +484,133 @@ class EnhancedCSDSimulator:
         
         return similarities.tolist()
     
+    def process_era_pipeline(self, query_data: np.ndarray, metadata: Dict[str, Any]) -> np.ndarray:
+        """
+        Process the complete Encode-Retrieve-Augment pipeline on CSD.
+        
+        Args:
+            query_data: Input query data
+            metadata: Query metadata
+            
+        Returns:
+            Augmented data ready for generation
+        """
+        start_time = time.time()
+        
+        # Stage 1: Encode
+        encoded_data = self._encode_on_csd(query_data, metadata)
+        
+        # Stage 2: Retrieve  
+        retrieved_data = self._retrieve_on_csd(encoded_data, metadata)
+        
+        # Stage 3: Augment
+        augmented_data = self._augment_on_csd(query_data, retrieved_data, metadata)
+        
+        elapsed = time.time() - start_time
+        logger.debug(f"CSD ERA pipeline completed in {elapsed*1000:.2f}ms")
+        
+        return augmented_data
+    
+    def _encode_on_csd(self, query_data: np.ndarray, metadata: Dict[str, Any]) -> np.ndarray:
+        """Simulate encoding on CSD."""
+        # Simulate encoding latency
+        time.sleep(self.compute_latency_ms / 1000)
+        
+        # For simulation, return a fixed-size embedding
+        if query_data.dtype == np.float32 and len(query_data.shape) == 1:
+            # Already an embedding
+            return query_data
+        else:
+            # Simulate encoding text to embedding
+            encoding = np.random.randn(self.embedding_dim).astype(np.float32)
+            encoding = encoding / np.linalg.norm(encoding)  # Normalize
+            return encoding
+    
+    def _retrieve_on_csd(self, query_embedding: np.ndarray, metadata: Dict[str, Any]) -> List[np.ndarray]:
+        """Simulate retrieval on CSD."""
+        top_k = metadata.get("top_k", 5)
+        
+        # Use existing retrieval logic
+        if self.storage.num_vectors > 0:
+            # Get some candidate indices
+            num_candidates = min(100, self.storage.num_vectors)
+            candidate_indices = list(range(num_candidates))
+            
+            # Compute similarities
+            similarities = self.compute_similarities(query_embedding, candidate_indices)
+            
+            # Get top-k
+            top_indices = np.argsort(similarities)[-top_k:][::-1]
+            retrieved_embeddings = self.retrieve_embeddings(top_indices.tolist())
+            
+            return [retrieved_embeddings[i] for i in range(len(retrieved_embeddings))]
+        else:
+            # Return dummy retrieved documents for simulation
+            dummy_docs = []
+            for i in range(top_k):
+                doc_embedding = np.random.randn(self.embedding_dim).astype(np.float32)
+                doc_embedding = doc_embedding / np.linalg.norm(doc_embedding)
+                dummy_docs.append(doc_embedding)
+            return dummy_docs
+    
+    def _augment_on_csd(self, 
+                       query_data: np.ndarray, 
+                       retrieved_docs: List[np.ndarray], 
+                       metadata: Dict[str, Any]) -> np.ndarray:
+        """Simulate augmentation on CSD."""
+        # Simulate augmentation latency
+        time.sleep(self.compute_latency_ms * 0.5 / 1000)
+        
+        # Combine query and retrieved documents
+        all_data = [query_data] + retrieved_docs
+        
+        # Concatenate all embeddings into augmented data
+        augmented_data = np.concatenate(all_data)
+        
+        return augmented_data
+    
+    def p2p_transfer_to_gpu(self, data: np.ndarray) -> str:
+        """
+        Simulate P2P transfer from CSD to GPU memory.
+        
+        Args:
+            data: Data to transfer
+            
+        Returns:
+            GPU allocation ID
+        """
+        if not self.enable_system_integration or self.system_memory is None:
+            logger.warning("System integration not enabled, skipping P2P transfer")
+            return "dummy_gpu_allocation"
+        
+        # First allocate in CSD memory
+        csd_allocation_id = self.system_memory.allocate_memory(
+            MemoryType.CSD, 
+            data.nbytes, 
+            data
+        )
+        
+        # Then transfer to GPU via P2P
+        gpu_allocation_id = self.system_memory.transfer_data(
+            MemoryType.CSD, 
+            csd_allocation_id, 
+            MemoryType.GPU, 
+            async_transfer=False
+        )
+        
+        # Clean up CSD allocation
+        self.system_memory.deallocate_memory(MemoryType.CSD, csd_allocation_id)
+        
+        logger.debug(f"P2P transfer to GPU: {data.nbytes/1024:.1f}KB")
+        
+        return gpu_allocation_id
+
     def get_metrics(self) -> Dict[str, Any]:
         """Get performance metrics."""
         cache_hit_rate = (self.metrics.cache_hits / 
                          (self.metrics.cache_hits + self.metrics.cache_misses + 1e-10))
         
-        return {
+        metrics = {
             "read_ops": self.metrics.read_ops,
             "write_ops": self.metrics.write_ops,
             "cache_hit_rate": cache_hit_rate,
@@ -480,9 +619,20 @@ class EnhancedCSDSimulator:
             "avg_latency_ms": self.metrics.avg_latency * 1000,
             "storage_usage_mb": self.storage.num_vectors * self.storage.embedding_size / (1024 * 1024)
         }
+        
+        # Add system memory metrics if available
+        if self.system_memory is not None:
+            system_stats = self.system_memory.get_comprehensive_stats()
+            metrics["system_memory"] = system_stats
+        
+        return metrics
     
     def shutdown(self) -> None:
         """Shutdown the simulator."""
         self.executor.shutdown(wait=True)
         self.storage.close()
+        
+        if self.system_memory is not None:
+            self.system_memory.cleanup()
+        
         logger.info("Enhanced CSD Simulator shutdown complete")

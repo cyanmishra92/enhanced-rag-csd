@@ -22,9 +22,9 @@ from .evaluation.accuracy_validator import (
     DatasetLoader
 )
 
-# Benchmark imports
-from .benchmarks.runner import BenchmarkRunner
-from .benchmarks.visualizer import BenchmarkVisualizer
+# Benchmark imports (temporarily disabled for import fix)
+# from .benchmarks.runner import BenchmarkRunner
+# from .benchmarks.visualizer import BenchmarkVisualizer
 
 __all__ = [
     "EnhancedRAGPipeline",
@@ -34,8 +34,8 @@ __all__ = [
     "AccuracyValidator",
     "ValidationDataset",
     "DatasetLoader",
-    "BenchmarkRunner",
-    "BenchmarkVisualizer",
+    # "BenchmarkRunner",  # Temporarily disabled
+    # "BenchmarkVisualizer",  # Temporarily disabled
 ]
 
 # Configure matplotlib for headless environments

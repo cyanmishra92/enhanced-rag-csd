@@ -22,8 +22,7 @@ from enhanced_rag_csd.utils.logger import get_logger
 from enhanced_rag_csd.benchmarks.baseline_systems import (
     VanillaRAG, PipeRAGLike, EdgeRAGLike, BaseRAGSystem
 )
-from enhanced_rag_csd.pipeline import RAGCSDPipeline
-from enhanced_rag_csd.enhanced_pipeline import EnhancedRAGPipeline, PipelineConfig
+from enhanced_rag_csd.core.pipeline import EnhancedRAGPipeline, PipelineConfig
 
 logger = get_logger(__name__)
 

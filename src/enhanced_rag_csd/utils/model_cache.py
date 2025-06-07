@@ -136,3 +136,8 @@ class ModelCache:
 
 # Global instance
 model_cache = ModelCache()
+
+
+def get_model_cache() -> ModelCache:
+    """Get the global model cache instance."""
+    return model_cache
