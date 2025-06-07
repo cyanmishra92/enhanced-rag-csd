@@ -25,7 +25,7 @@ class StandaloneBenchmarkDemo:
     
     def __init__(self):
         self.timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        self.output_dir = Path(f"results/standalone_demo_{self.timestamp}")
+        self.output_dir = Path(f"results/standalone_benchmark")
         self.output_dir.mkdir(parents=True, exist_ok=True)
         
         # Setup plotting style

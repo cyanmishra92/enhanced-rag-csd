@@ -311,7 +311,7 @@ class ComprehensiveBenchmarkRunner:
         self.output_dir.mkdir(parents=True, exist_ok=True)
         
         self.timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        self.experiment_dir = self.output_dir / f"experiment_{self.timestamp}"
+        self.experiment_dir = self.output_dir
         self.experiment_dir.mkdir(parents=True, exist_ok=True)
         
         # Initialize components

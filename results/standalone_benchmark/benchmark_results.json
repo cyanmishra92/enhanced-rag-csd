@@ -1,0 +1,50 @@
+{
+  "Enhanced-RAG-CSD": {
+    "avg_latency": 0.024,
+    "avg_throughput": 41.9,
+    "avg_relevance_score": 0.867,
+    "avg_cache_hit_rate": 0.6,
+    "avg_error_rate": 0.02,
+    "memory_usage_mb": 512
+  },
+  "RAG-CSD": {
+    "avg_latency": 0.075,
+    "avg_throughput": 13.3,
+    "avg_relevance_score": 0.796,
+    "avg_cache_hit_rate": 0.25,
+    "avg_error_rate": 0.04,
+    "memory_usage_mb": 768
+  },
+  "PipeRAG-like": {
+    "avg_latency": 0.088,
+    "avg_throughput": 11.4,
+    "avg_relevance_score": 0.771,
+    "avg_cache_hit_rate": 0.15,
+    "avg_error_rate": 0.05,
+    "memory_usage_mb": 1024
+  },
+  "FlashRAG-like": {
+    "avg_latency": 0.069,
+    "avg_throughput": 14.4,
+    "avg_relevance_score": 0.751,
+    "avg_cache_hit_rate": 0.2,
+    "avg_error_rate": 0.06,
+    "memory_usage_mb": 896
+  },
+  "EdgeRAG-like": {
+    "avg_latency": 0.098,
+    "avg_throughput": 10.3,
+    "avg_relevance_score": 0.746,
+    "avg_cache_hit_rate": 0.3,
+    "avg_error_rate": 0.03,
+    "memory_usage_mb": 640
+  },
+  "VanillaRAG": {
+    "avg_latency": 0.111,
+    "avg_throughput": 9.0,
+    "avg_relevance_score": 0.726,
+    "avg_cache_hit_rate": 0.05,
+    "avg_error_rate": 0.08,
+    "memory_usage_mb": 1280
+  }
+}
