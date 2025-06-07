@@ -416,7 +416,7 @@ class ComprehensiveBenchmarkRunner:
         # Combine all documents
         all_docs = scientific_docs + medical_docs + tech_docs
         
-        # Save documents
+        # Save documents as text files
         for i, doc in enumerate(all_docs):
             doc_path = corpus_dir / f"doc_{i:03d}_{doc['domain']}.txt"
             with open(doc_path, 'w') as f:
@@ -425,22 +425,95 @@ class ComprehensiveBenchmarkRunner:
                 f.write(f"Domain: {doc['domain']}\n\n")
                 f.write(doc['content'])
         
-        # Create metadata file
-        metadata = {
-            "corpus_name": "Comprehensive Public Benchmark Corpus",
-            "total_documents": len(all_docs),
-            "categories": list(set(doc['category'] for doc in all_docs)),
-            "domains": list(set(doc['domain'] for doc in all_docs)),
-            "created_at": datetime.now().isoformat(),
-            "documents": all_docs
-        }
-        
-        metadata_path = corpus_dir / "metadata.json"
-        with open(metadata_path, 'w') as f:
-            json.dump(metadata, f, indent=2)
+        # Use the proper vector database creation from prepare_vector_database.py
+        logger.info("Creating proper vector database files...")
+        self._create_proper_vector_database(corpus_dir, all_docs)
         
         logger.info(f"Created corpus with {len(all_docs)} documents in {corpus_dir}")
         return str(corpus_dir)
+    
+    def _create_proper_vector_database(self, corpus_dir: Path, documents: list) -> None:
+        """Create proper vector database files that baseline systems expect."""
+        from sentence_transformers import SentenceTransformer
+        
+        logger.info("Loading sentence transformer model...")
+        model = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
+        
+        # Process all text files to create chunks and metadata
+        chunks = []
+        metadata = []
+        
+        txt_files = list(corpus_dir.glob("*.txt"))
+        logger.info(f"Processing {len(txt_files)} text files")
+        
+        for i, txt_file in enumerate(txt_files):
+            with open(txt_file, 'r', encoding='utf-8') as f:
+                content = f.read()
+            
+            # Extract title and content
+            lines = content.split('\n')
+            title = lines[0].replace('Title: ', '') if lines[0].startswith('Title: ') else txt_file.stem
+            
+            # Find content after metadata
+            content_start = 0
+            for j, line in enumerate(lines):
+                if line.strip() == '' and j > 0:
+                    content_start = j + 1
+                    break
+            
+            text_content = '\n'.join(lines[content_start:])
+            
+            # Create chunks (simpler approach for compatibility)
+            text_chunks = self._chunk_text(text_content, chunk_size=256, overlap=32)
+            
+            for chunk_idx, chunk in enumerate(text_chunks):
+                chunks.append(chunk)
+                metadata.append({
+                    'id': len(chunks) - 1,
+                    'document_id': i,
+                    'document_title': title,
+                    'document_file': txt_file.name,
+                    'chunk_index': chunk_idx,
+                    'chunk_length': len(chunk)
+                })
+        
+        logger.info(f"Created {len(chunks)} chunks from {len(txt_files)} documents")
+        
+        # Generate embeddings
+        logger.info("Generating embeddings...")
+        embeddings = model.encode(chunks, show_progress_bar=False)
+        embeddings = embeddings.astype(np.float32)
+        
+        # Save files in the format expected by baseline systems
+        logger.info("Saving vector database files...")
+        
+        # Save embeddings
+        embeddings_path = corpus_dir / "embeddings.npy"
+        np.save(embeddings_path, embeddings)
+        
+        # Save chunks as list
+        chunks_path = corpus_dir / "chunks.json"
+        with open(chunks_path, 'w', encoding='utf-8') as f:
+            json.dump(chunks, f, indent=2, ensure_ascii=False)
+        
+        # Save metadata as list (this is the key fix!)
+        metadata_path = corpus_dir / "metadata.json"
+        with open(metadata_path, 'w', encoding='utf-8') as f:
+            json.dump(metadata, f, indent=2, ensure_ascii=False)
+        
+        logger.info(f"✅ Vector database created: {len(chunks)} chunks, embeddings shape: {embeddings.shape}")
+    
+    def _chunk_text(self, text: str, chunk_size: int = 256, overlap: int = 32) -> list:
+        """Split text into overlapping chunks."""
+        words = text.split()
+        chunks = []
+        
+        for i in range(0, len(words), chunk_size - overlap):
+            chunk = ' '.join(words[i:i + chunk_size])
+            if chunk.strip():
+                chunks.append(chunk.strip())
+        
+        return chunks
     
     def initialize_systems(self, corpus_path: str) -> Dict[str, Any]:
         """Initialize all RAG systems with the document corpus."""

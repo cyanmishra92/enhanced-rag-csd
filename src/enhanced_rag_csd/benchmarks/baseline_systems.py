@@ -5,6 +5,7 @@ This module provides simplified implementations of other RAG systems for benchma
 
 import time
 import numpy as np
+import random
 from typing import Dict, List, Optional, Any
 from abc import ABC, abstractmethod
 
