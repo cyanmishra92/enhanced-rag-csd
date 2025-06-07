@@ -17,9 +17,9 @@ python scripts/standalone_demo.py
 ```
 
 **Expected output:**
-- ✅ 129x faster query processing
-- ✅ 85.0% relevance accuracy  
-- ✅ 59.4% cache hit rate
+- ✅ 4.6x faster query processing
+- ✅ 86.7% relevance accuracy  
+- ✅ 60.0% cache hit rate
 - ✅ Demo completes in ~2 seconds
 
 ## Table of Contents
@@ -253,10 +253,10 @@ python scripts/standalone_demo.py
 
 # Expected output:
 # 🎯 Key Demo Results:
-#    🚀 129x faster query processing
-#    ⚡ 85.0% relevance accuracy
+#    🚀 4.6x faster query processing
+#    ⚡ 86.7% relevance accuracy
 #    🧠 60.0% memory reduction
-#    💾 59.4% cache hit rate
+#    💾 60.0% cache hit rate
 #    🎯 100% success rate
 
 # Run comprehensive benchmark (3-5 minutes)
@@ -265,7 +265,7 @@ python scripts/comprehensive_public_benchmark.py
 # Expected output:
 # ✅ Best Overall System: enhanced_rag_csd
 # 📊 Performance Summary:
-#    enhanced_rag_csd: 1.0ms avg latency, 2206.9 q/s throughput
+#    enhanced_rag_csd: 1.1ms avg latency, 1606.6 q/s throughput
 ```
 
 ## Troubleshooting

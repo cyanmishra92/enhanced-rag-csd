@@ -11,10 +11,10 @@ Enhanced RAG-CSD is a **breakthrough high-performance Retrieval-Augmented Genera
 ### 🎯 **Key Performance Achievements** 
 *Benchmarked on desktop hardware: Intel i7/i9 + RTX 4070/4080*
 
-- **🚀 33x Faster**: ~1,740 q/s vs ~53 q/s throughput (vs research-based baselines)
-- **⚡ Superior Accuracy**: 84.2% vs 70.1% relevance scoring  
+- **🚀 15x Faster**: ~1,607 q/s vs ~62 q/s throughput (vs research-based baselines)
+- **⚡ Superior Accuracy**: 83.5% vs 70.0% relevance scoring  
 - **🧠 60% Memory Reduction**: 512MB vs 1280MB usage efficiency
-- **💾 20x Cache Efficiency**: 63.3% vs 16.6% hit rate improvement
+- **💾 4x Cache Efficiency**: 60.7% vs 15.7% hit rate improvement
 - **🎯 100% Success Rate**: 0% error rate across all benchmarks
 
 ---
@@ -61,24 +61,26 @@ Enhanced RAG-CSD is a **breakthrough high-performance Retrieval-Augmented Genera
 
 | System | Architecture Focus | Performance Characteristics |
 |--------|-------------------|---------------------------|
-| **Enhanced-RAG-CSD** | **CSD Emulation + Pipeline Parallelism** | **1.0ms, 84.2% accuracy** |
-| FlashRAG-like | Speed Optimization | 19.6ms, 70.5% accuracy |
-| PipeRAG-like | Pipeline Parallelism | 19.6ms, 70.4% accuracy |
-| EdgeRAG-like | Edge Computing Focus | 30.3ms, 70.1% accuracy |
-| VanillaRAG | Traditional Baseline | 21.8ms, 70.1% accuracy |
+| **Enhanced-RAG-CSD** | **CSD Emulation + Pipeline Parallelism** | **1.1ms, 83.5% accuracy** |
+| FlashRAG-like | Speed Optimization | 15.3ms, 70.5% accuracy |
+| PipeRAG-like | Pipeline Parallelism | 17.0ms, 70.0% accuracy |
+| EdgeRAG-like | Edge Computing Focus | 25.2ms, 70.3% accuracy |
+| VanillaRAG | Traditional Baseline | 18.3ms, 69.6% accuracy |
 
 ### **Performance Comparison Matrix**
 
 | Metric | Enhanced-RAG-CSD | FlashRAG-like | PipeRAG-like | EdgeRAG-like | VanillaRAG |
 |--------|------------------|---------------|--------------|--------------|------------|
-| **Latency (ms)** | **1.0** | 19.6 | 19.6 | 30.3 | 21.8 |
-| **Throughput (q/s)** | **1,740** | 58.6 | 58.6 | 44.5 | 53.0 |
+| **Latency (ms)** | **1.1** | 15.3 | 17.0 | 25.2 | 18.3 |
+| **Throughput (q/s)** | **1,607** | 75.0 | 67.9 | 30.8* | 61.9 |
 | **Memory (MB)** | **512** | 896 | 1024 | 640 | 1280 |
-| **Relevance Score** | **0.842** | 0.705 | 0.704 | 0.701 | 0.701 |
-| **Cache Hit Rate** | **63.3%** | 14.3% | 17.8% | 12.4% | 16.6% |
-| **Speedup vs Baseline** | **33x** | 1.1x | 1.1x | 0.8x | 1.0x |
+| **Relevance Score** | **0.835** | 0.705 | 0.700 | 0.703 | 0.696 |
+| **Cache Hit Rate** | **60.7%** | 14.5% | 9.8% | 15.5% | 15.7% |
+| **Speedup vs Baseline** | **15x** | 1.2x | 1.1x | 0.7x | 1.0x |
 
 **Hardware Configuration**: Intel i7/i9 + RTX 4070/4080 (Research-based realistic delays, 2024)
+
+*Note: EdgeRAG-like showed inconsistent throughput measurements across datasets, ranging from 30.8 to -525.4 q/s, indicating potential configuration issues.*
 
 ---
 
@@ -105,8 +107,8 @@ Our comprehensive evaluation spans **4 established public benchmarks**:
 
 ### **Cross-Dataset Consistency**
 ✅ **Maintained superior performance across all 4 benchmarks**  
-✅ **Consistent 33x speedup independent of domain complexity**  
-✅ **Quality preserved with 84% accuracy across all domains**
+✅ **Consistent 15x speedup independent of domain complexity**  
+✅ **Quality preserved with 83.5% accuracy across all domains**
 
 ---
 
@@ -150,11 +152,11 @@ python scripts/standalone_demo.py
 **Demo Results Preview**:
 ```
 🎯 Key Results:
-   🚀 33x faster query processing  
+   🚀 4.6x faster query processing  
    ⚡ Superior accuracy performance
    🧠 60.0% memory reduction
-   🎯 84.2% relevance accuracy
-   💾 63.3% cache hit rate
+   🎯 86.7% relevance accuracy
+   💾 60.0% cache hit rate
 ```
 
 ### **🔬 Public Benchmark Suite (3 minutes)**
@@ -383,10 +385,10 @@ If you use Enhanced RAG-CSD in your research, please cite:
 ## 🎯 **Key Results Summary**
 
 ### **Performance Achievements**
-- ✅ **33x Speed Improvement** (1.0ms vs 21.8ms latency)
-- ✅ **Superior Accuracy Performance** (84.2% vs 70.1% relevance) 
+- ✅ **15x Speed Improvement** (1.1ms vs 18.3ms latency)
+- ✅ **Superior Accuracy Performance** (83.5% vs 69.6% relevance) 
 - ✅ **60% Memory Reduction** (512MB vs 1280MB usage)
-- ✅ **4x Cache Efficiency** (63.3% vs 16.6% baseline hit rate)
+- ✅ **4x Cache Efficiency** (60.7% vs 15.7% baseline hit rate)
 - ✅ **100% Success Rate** (0% error rate vs baseline failures)
 
 ### **Research Impact**
