@@ -31,8 +31,14 @@ def test_backend_simulation(backend_type, config):
             backend.is_available = lambda: True
             backend.initialize()
             
-        else:
-            backend = manager.create_backend(backend_type, config)
+        elif backend_type == CSDBackendType.ENHANCED_SIMULATOR:
+            from src.enhanced_rag_csd.backends.enhanced_simulator import EnhancedSimulatorBackend
+            backend = EnhancedSimulatorBackend(config)
+            backend.initialize()
+        elif backend_type == CSDBackendType.MOCK_SPDK:
+            from src.enhanced_rag_csd.backends.mock_spdk import MockSPDKEmulatorBackend
+            backend = MockSPDKEmulatorBackend(config)
+            backend.initialize()
         
         if not backend:
             print(f"  ❌ Failed to create {backend_type.value} backend")

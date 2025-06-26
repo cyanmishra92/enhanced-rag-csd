@@ -174,30 +174,25 @@ class MemoryMappedStorage:
     def _init_storage(self) -> None:
         """Initialize memory-mapped storage."""
         if os.path.exists(self.vectors_file):
-            # Open existing file
             self.file_handle = open(self.vectors_file, "r+b")
             file_size = os.path.getsize(self.vectors_file)
             self.num_vectors = file_size // self.embedding_size
-            
-            if file_size > 0:
-                self.mmap_file = mmap.mmap(
-                    self.file_handle.fileno(), 
-                    file_size,
-                    access=mmap.ACCESS_WRITE
-                )
+            if file_size == 0:
+                # If the file is empty, initialize it with a small size
+                initial_size = self.embedding_size
+                self.file_handle.write(b'\0' * initial_size)
+                self.file_handle.flush()
+                file_size = initial_size
+                self.num_vectors = 1
         else:
-            # Create new file
             self.file_handle = open(self.vectors_file, "w+b")
-            # Pre-allocate space for initial vectors
-            initial_size = 1000 * self.embedding_size
+            initial_size = self.embedding_size
             self.file_handle.write(b'\0' * initial_size)
             self.file_handle.flush()
-            
-            self.mmap_file = mmap.mmap(
-                self.file_handle.fileno(),
-                initial_size,
-                access=mmap.ACCESS_WRITE
-            )
+            file_size = initial_size
+            self.num_vectors = 1
+
+        self.mmap_file = mmap.mmap(self.file_handle.fileno(), file_size, access=mmap.ACCESS_WRITE)
     
     def read_vector(self, index: int) -> np.ndarray:
         """Read a vector from memory-mapped storage."""
