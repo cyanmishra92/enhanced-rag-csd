@@ -168,7 +168,9 @@ class MemoryMappedStorage:
         self.metadata_file = os.path.join(storage_path, "metadata.json")
         
         self.mmap_file = None
+        self.file_handle = None
         self.num_vectors = 0
+        self._mmap_lock = Lock()  # Thread safety for mmap operations
         self._init_storage()
     
     def _init_storage(self) -> None:
@@ -199,52 +201,95 @@ class MemoryMappedStorage:
         if index >= self.num_vectors:
             raise IndexError(f"Index {index} out of bounds")
         
-        offset = index * self.embedding_size
-        self.mmap_file.seek(offset)
-        data = self.mmap_file.read(self.embedding_size)
-        return np.frombuffer(data, dtype=np.float32)
+        with self._mmap_lock:
+            # Check if mmap is valid
+            if self.mmap_file is None or self.mmap_file.closed:
+                logger.warning("Memory-mapped file is closed, reinitializing...")
+                self._init_storage()
+            
+            offset = index * self.embedding_size
+            try:
+                self.mmap_file.seek(offset)
+                data = self.mmap_file.read(self.embedding_size)
+                return np.frombuffer(data, dtype=np.float32)
+            except ValueError as e:
+                logger.error(f"Error reading from mmap: {e}. Reinitializing storage.")
+                self._init_storage()
+                self.mmap_file.seek(offset)
+                data = self.mmap_file.read(self.embedding_size)
+                return np.frombuffer(data, dtype=np.float32)
     
     def write_vector(self, index: int, vector: np.ndarray) -> None:
         """Write a vector to memory-mapped storage."""
         if vector.shape[0] != self.embedding_dim:
             raise ValueError(f"Vector dimension mismatch: {vector.shape[0]} != {self.embedding_dim}")
         
-        offset = index * self.embedding_size
-        
-        # Extend file if necessary
-        required_size = (index + 1) * self.embedding_size
-        current_size = len(self.mmap_file)
-        
-        if required_size > current_size:
-            self._extend_storage(required_size)
-        
-        self.mmap_file.seek(offset)
-        self.mmap_file.write(vector.astype(np.float32).tobytes())
-        self.mmap_file.flush()
-        
-        if index >= self.num_vectors:
-            self.num_vectors = index + 1
+        with self._mmap_lock:
+            # Check if mmap is valid
+            if self.mmap_file is None or self.mmap_file.closed:
+                logger.warning("Memory-mapped file is closed, reinitializing...")
+                self._init_storage()
+            
+            offset = index * self.embedding_size
+            
+            # Extend file if necessary
+            required_size = (index + 1) * self.embedding_size
+            try:
+                current_size = len(self.mmap_file)
+            except ValueError as e:
+                logger.error(f"Error accessing mmap: {e}. Reinitializing storage.")
+                self._init_storage()
+                current_size = len(self.mmap_file)
+            
+            if required_size > current_size:
+                self._extend_storage(required_size)
+            
+            self.mmap_file.seek(offset)
+            self.mmap_file.write(vector.astype(np.float32).tobytes())
+            self.mmap_file.flush()
+            
+            if index >= self.num_vectors:
+                self.num_vectors = index + 1
     
     def _extend_storage(self, new_size: int) -> None:
         """Extend the memory-mapped file."""
-        self.mmap_file.close()
-        self.file_handle.seek(0, 2)  # Seek to end
-        
-        # Extend in chunks
-        extension_size = max(new_size - self.file_handle.tell(), 1000 * self.embedding_size)
-        self.file_handle.write(b'\0' * extension_size)
-        self.file_handle.flush()
-        
-        # Re-map the file
-        self.mmap_file = mmap.mmap(
-            self.file_handle.fileno(),
-            self.file_handle.tell(),
-            access=mmap.ACCESS_WRITE
-        )
+        try:
+            # Close current mmap safely
+            if self.mmap_file and not self.mmap_file.closed:
+                self.mmap_file.close()
+            
+            self.file_handle.seek(0, 2)  # Seek to end
+            current_file_size = self.file_handle.tell()
+            
+            # Extend in chunks
+            extension_size = max(new_size - current_file_size, 1000 * self.embedding_size)
+            self.file_handle.write(b'\0' * extension_size)
+            self.file_handle.flush()
+            
+            # Re-map the file
+            new_file_size = self.file_handle.tell()
+            self.mmap_file = mmap.mmap(
+                self.file_handle.fileno(),
+                new_file_size,
+                access=mmap.ACCESS_WRITE
+            )
+            
+            logger.debug(f"Extended storage from {current_file_size} to {new_file_size} bytes")
+            
+        except Exception as e:
+            logger.error(f"Error extending storage: {e}")
+            # Fallback: reinitialize storage
+            self._init_storage()
     
     def batch_read(self, indices: List[int]) -> np.ndarray:
         """Read multiple vectors efficiently."""
         vectors = np.zeros((len(indices), self.embedding_dim), dtype=np.float32)
+        
+        with self._mmap_lock:
+            # Check if mmap is valid
+            if self.mmap_file is None or self.mmap_file.closed:
+                logger.warning("Memory-mapped file is closed, reinitializing...")
+                self._init_storage()
         
         # Sort indices for sequential access
         sorted_indices = sorted(enumerate(indices), key=lambda x: x[1])
@@ -256,10 +301,25 @@ class MemoryMappedStorage:
     
     def close(self) -> None:
         """Close memory-mapped storage."""
-        if self.mmap_file:
-            self.mmap_file.close()
-        if self.file_handle:
-            self.file_handle.close()
+        with self._mmap_lock:
+            try:
+                if self.mmap_file and not self.mmap_file.closed:
+                    self.mmap_file.close()
+            except Exception as e:
+                logger.warning(f"Error closing mmap: {e}")
+                
+            try:
+                if self.file_handle and not self.file_handle.closed:
+                    self.file_handle.close()
+            except Exception as e:
+                logger.warning(f"Error closing file handle: {e}")
+    
+    def __del__(self):
+        """Ensure resources are cleaned up when object is destroyed."""
+        try:
+            self.close()
+        except Exception:
+            pass  # Ignore errors during cleanup
 
 
 class EnhancedCSDSimulator:
