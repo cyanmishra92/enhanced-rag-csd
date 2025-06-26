@@ -13,6 +13,8 @@ __email__ = "your.email@example.com"
 from .core.pipeline import EnhancedRAGPipeline
 from .core.config import PipelineConfig
 from .retrieval.incremental_index import IncrementalVectorStore
+from .retrieval.vectordb import VectorDB
+from .retrieval.faiss_vectordb import FaissVectorDB
 from .core.csd_emulator import EnhancedCSDSimulator
 
 # Evaluation imports
@@ -30,6 +32,8 @@ __all__ = [
     "EnhancedRAGPipeline",
     "PipelineConfig",
     "IncrementalVectorStore",
+    "VectorDB",
+    "FaissVectorDB",
     "EnhancedCSDSimulator",
     "AccuracyValidator",
     "ValidationDataset",

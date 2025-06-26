@@ -13,6 +13,8 @@ import numpy as np
 
 from enhanced_rag_csd.core.encoder import Encoder
 from enhanced_rag_csd.retrieval.incremental_index import IncrementalVectorStore
+from enhanced_rag_csd.retrieval.faiss_vectordb import FaissVectorDB
+from enhanced_rag_csd.retrieval.vectordb_factory import VectorDBFactory
 from enhanced_rag_csd.core.augmentor import Augmentor
 from enhanced_rag_csd.core.csd_emulator import EnhancedCSDSimulator
 from enhanced_rag_csd.core.system_data_flow import SystemDataFlow, SystemDataFlowConfig
@@ -38,6 +40,7 @@ class PipelineConfig:
     embedding_dim: int = 384
     
     # Indexing settings
+    vector_db: str = "incremental"
     delta_threshold: int = 10000
     max_delta_indices: int = 5
     
@@ -153,8 +156,9 @@ class EnhancedRAGPipeline:
         # Embedding encoder
         self.encoder = Encoder({"model": self.config.embedding_model})
         
-        # Incremental vector store
-        self.vector_store = IncrementalVectorStore(
+        # Vector store
+        self.vector_store = VectorDBFactory.create_vectordb(
+            self.config.vector_db,
             storage_path=os.path.join(self.config.storage_path, "vectors"),
             dimension=self.config.embedding_dim,
             delta_threshold=self.config.delta_threshold,
@@ -217,68 +221,21 @@ class EnhancedRAGPipeline:
         if metadata is None:
             metadata = [{"doc_id": i} for i in range(len(documents))]
         
-        # Process documents into chunks
-        all_chunks = []
-        all_metadata = []
-        
-        for doc, meta in zip(documents, metadata):
-            chunks = self.text_processor.chunk_text_optimized(
-                doc, 
-                chunk_size=chunk_size,
-                chunk_overlap=chunk_overlap
-            )
-            
-            for i, chunk in enumerate(chunks):
-                all_chunks.append(chunk)
-                chunk_meta = meta.copy()
-                chunk_meta["chunk_id"] = i
-                all_metadata.append(chunk_meta)
-        
-        logger.info(f"Processing {len(all_chunks)} chunks from {len(documents)} documents")
-        
-        # Encode chunks
-        if self.config.enable_caching:
-            # Check cache for existing embeddings
-            embeddings = []
-            uncached_chunks = []
-            uncached_indices = []
-            
-            for i, chunk in enumerate(all_chunks):
-                cached = self.embedding_cache.get(chunk)
-                if cached is not None:
-                    embeddings.append(cached)
-                else:
-                    uncached_chunks.append(chunk)
-                    uncached_indices.append(i)
-                    embeddings.append(None)
-            
-            # Encode uncached chunks
-            if uncached_chunks:
-                new_embeddings = self.encoder.encode(uncached_chunks)
-                
-                # Update cache and results
-                for i, idx in enumerate(uncached_indices):
-                    embeddings[idx] = new_embeddings[i]
-                    self.embedding_cache.put(uncached_chunks[i], new_embeddings[i])
-            
-            embeddings = np.array(embeddings)
-        else:
-            embeddings = self.encoder.encode(all_chunks)
-        
         # Add to vector store
-        self.vector_store.add_documents(embeddings, all_chunks, all_metadata)
+        embeddings = self.encoder.encode(documents)
+        self.vector_store.add_documents(embeddings, documents, metadata)
         
         # Store in CSD simulator if enabled
         if self.csd_simulator:
-            self.csd_simulator.store_embeddings(embeddings, all_metadata)
+            self.csd_simulator.store_embeddings(embeddings, metadata)
         
         elapsed = time.time() - start_time
         
         result = {
             "documents_processed": len(documents),
-            "chunks_created": len(all_chunks),
+            "chunks_created": len(documents),
             "processing_time": elapsed,
-            "chunks_per_second": len(all_chunks) / max(elapsed, 1e-10)
+            "chunks_per_second": len(documents) / max(elapsed, 1e-10)
         }
         
         self.metrics.record_timing("add_documents", elapsed)

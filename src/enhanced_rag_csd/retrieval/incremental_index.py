@@ -19,6 +19,7 @@ from sklearn.decomposition import PCA
 
 from enhanced_rag_csd.utils.logger import get_logger
 from enhanced_rag_csd.utils.error_handling import handle_exceptions
+from .vectordb import VectorDB
 
 logger = get_logger(__name__)
 
@@ -301,7 +302,7 @@ class DeltaIndex:
         return delta
 
 
-class IncrementalVectorStore:
+class IncrementalVectorStore(VectorDB):
     """Vector store with incremental indexing and drift detection."""
     
     def __init__(self, 
