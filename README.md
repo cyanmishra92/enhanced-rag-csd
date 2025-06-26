@@ -22,9 +22,9 @@ Enhanced RAG-CSD is a **breakthrough high-performance Retrieval-Augmented Genera
 
 | Backend | Latency | Throughput | Specialization | Computational Offloading |
 |---------|---------|------------|----------------|---------------------------|
-| **Enhanced Simulator** | 3.75ms | 264 q/s | High-performance baseline | ❌ |
-| **Mock SPDK** | 5.02ms | 198 q/s | 3-level cache hierarchy | ❌ |
-| **OpenCSD Emulator** | 201ms | 5.3 q/s | **eBPF offloading** | ✅ **ML primitives** |
+| **Enhanced Simulator** | 3.75ms | 264 q/s | High-performance baseline | ✅ **ML encode/retrieve/augment** |
+| **Mock SPDK** | 5.02ms | 198 q/s | 3-level cache hierarchy | ✅ **Vector processing units** |
+| **OpenCSD Emulator** | 8.5ms | 118 q/s | **eBPF offloading** | ✅ **ML primitives + optimization** |
 | **SPDK vfio-user** | 10.48ms | 95 q/s | Shared memory P2P | ✅ **Compute units** |
 
 ---

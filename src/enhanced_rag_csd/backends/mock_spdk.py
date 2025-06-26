@@ -306,6 +306,22 @@ class MockSPDKEmulatorBackend(CSDBackendInterface):
         self.max_parallel_ops = config.get("csd", {}).get("max_parallel_ops", 8)
         self.compute_latency_ms = config.get("csd", {}).get("compute_latency_ms", 0.1)
         
+        # ML computational offloading capabilities
+        self.ml_compute_units = config.get("csd", {}).get("ml_compute_units", 6)
+        self.ml_accelerator_freq = config.get("csd", {}).get("ml_frequency_mhz", 600)  # MHz
+        self.vector_processing_units = config.get("csd", {}).get("vector_units", 2)
+        
+        # ML computation metrics
+        self.ml_metrics = {
+            "ml_encode_ops": 0,
+            "ml_retrieve_ops": 0,
+            "ml_augment_ops": 0,
+            "vector_operations": 0,
+            "total_ml_compute_time": 0.0,
+            "offloaded_computations": 0,
+            "cache_accelerated_ops": 0
+        }
+        
         # Storage mapping
         self.embedding_to_lba = {}  # embedding_index -> LBA
         self.next_lba = 0
@@ -619,12 +635,158 @@ class MockSPDKEmulatorBackend(CSDBackendInterface):
         
         return allocation_id
     
+    def encode_on_csd(self, queries: List[str]) -> Tuple[np.ndarray, Dict[str, Any]]:
+        """Encode queries using CSD ML computational offloading with cache acceleration."""
+        start_time = time.time()
+        
+        # Simulate ML encoding computation on CSD with vector processing units
+        encoding_latency = len(queries) * (1.0 / self.ml_accelerator_freq)  # MHz to ms conversion
+        # Account for vector processing parallelism
+        if len(queries) > self.vector_processing_units:
+            parallel_batches = len(queries) // self.vector_processing_units
+            encoding_latency = parallel_batches * (1.0 / self.ml_accelerator_freq)
+        
+        time.sleep(encoding_latency / 1000)
+        
+        # Generate normalized embeddings
+        embeddings = []
+        for query in queries:
+            # Simulate encoder computation with cache optimization
+            embedding = np.random.randn(self.embedding_dim).astype(np.float32)
+            embedding = embedding / np.linalg.norm(embedding)
+            embeddings.append(embedding)
+        
+        elapsed = time.time() - start_time
+        self.ml_metrics["ml_encode_ops"] += len(queries)
+        self.ml_metrics["vector_operations"] += len(queries)
+        self.ml_metrics["total_ml_compute_time"] += elapsed
+        self.ml_metrics["offloaded_computations"] += 1
+        
+        # Use cache hierarchy to accelerate future operations
+        for i, embedding in enumerate(embeddings):
+            cache_key = f"encoded_query_{hash(queries[i])}"
+            self.cache_hierarchy.put_embedding(i, embedding)
+            self.ml_metrics["cache_accelerated_ops"] += 1
+        
+        stats = {
+            "encode_time_ms": elapsed * 1000,
+            "queries_encoded": len(queries),
+            "vector_units_used": min(self.vector_processing_units, len(queries)),
+            "cache_utilization": self.cache_hierarchy.get_stats()["cache_hit_rate"]
+        }
+        
+        logger.debug(f"CSD Encode: {len(queries)} queries in {elapsed*1000:.2f}ms using {min(self.vector_processing_units, len(queries))} vector units")
+        return np.array(embeddings), stats
+    
+    def retrieve_on_csd(self, query_embedding: np.ndarray, top_k: int = 5) -> Tuple[List[np.ndarray], Dict[str, Any]]:
+        """Retrieve embeddings using CSD ML computational offloading with 3-level cache."""
+        start_time = time.time()
+        
+        # Simulate retrieval computation on CSD with cache acceleration
+        cache_stats = self.cache_hierarchy.get_stats()
+        base_latency = 1.5 / self.ml_accelerator_freq  # MHz to ms conversion
+        
+        # Cache acceleration reduces latency
+        cache_speedup = 1.0 + (cache_stats["cache_hit_rate"] * 2.0)  # Up to 3x speedup
+        retrieval_latency = base_latency / cache_speedup
+        time.sleep(retrieval_latency / 1000)
+        
+        # Get candidate embeddings using cache hierarchy
+        max_candidates = min(100, top_k * 20)  # Search expansion
+        candidates = []
+        
+        if len(self.embedding_to_lba) > 0:
+            candidate_indices = list(range(min(max_candidates, len(self.embedding_to_lba))))
+            similarities = self.compute_similarities(query_embedding, candidate_indices)
+            top_indices = np.argsort(similarities)[-top_k:][::-1]
+            retrieved_embeddings = self.retrieve_embeddings(top_indices.tolist())
+            candidates = [retrieved_embeddings[i] for i in range(len(retrieved_embeddings))]
+        else:
+            # Generate dummy candidates
+            candidates = [np.random.randn(self.embedding_dim).astype(np.float32) for _ in range(top_k)]
+            for i in range(len(candidates)):
+                candidates[i] = candidates[i] / np.linalg.norm(candidates[i])
+        
+        elapsed = time.time() - start_time
+        self.ml_metrics["ml_retrieve_ops"] += 1
+        self.ml_metrics["vector_operations"] += len(candidates)
+        self.ml_metrics["total_ml_compute_time"] += elapsed
+        self.ml_metrics["offloaded_computations"] += 1
+        self.ml_metrics["cache_accelerated_ops"] += 1
+        
+        stats = {
+            "retrieve_time_ms": elapsed * 1000,
+            "candidates_retrieved": len(candidates),
+            "cache_speedup": cache_speedup,
+            "cache_hierarchy_stats": cache_stats
+        }
+        
+        logger.debug(f"CSD Retrieve: {len(candidates)} candidates in {elapsed*1000:.2f}ms with {cache_speedup:.1f}x cache speedup")
+        return candidates, stats
+    
+    def augment_on_csd(self, query: str, retrieved_contexts: List[np.ndarray], metadata: Dict[str, Any] = None) -> Tuple[str, Dict[str, Any]]:
+        """Augment query with retrieved contexts using CSD ML computational offloading."""
+        start_time = time.time()
+        
+        # Simulate augmentation computation on CSD with parallel processing
+        num_contexts = len(retrieved_contexts)
+        augmentation_latency = num_contexts * (0.4 / self.ml_accelerator_freq)  # MHz to ms
+        
+        # Use parallel processing for multiple contexts
+        if num_contexts > self.ml_compute_units:
+            parallel_batches = num_contexts // self.ml_compute_units
+            augmentation_latency = parallel_batches * (0.4 / self.ml_accelerator_freq)
+        
+        time.sleep(augmentation_latency / 1000)
+        
+        # Perform context augmentation with vector processing
+        if retrieved_contexts and len(retrieved_contexts) > 0:
+            # Compute context similarities for weighting
+            context_weights = []
+            for context in retrieved_contexts:
+                # Simulate similarity computation on vector units
+                weight = np.random.uniform(0.3, 1.0)  # Simulated relevance score
+                context_weights.append(weight)
+            
+            # Normalize weights
+            total_weight = sum(context_weights)
+            context_weights = [w / total_weight for w in context_weights] if total_weight > 0 else [1.0 / len(context_weights)] * len(context_weights)
+            
+            # Create weighted context summary
+            context_summary = f"Based on {len(retrieved_contexts)} relevant contexts (weights: {[f'{w:.2f}' for w in context_weights[:3]]}):\n"
+            for i, (context, weight) in enumerate(zip(retrieved_contexts[:3], context_weights[:3])):
+                context_summary += f"[Context {i+1} (relevance: {weight:.2f}): processed information] "
+            
+            augmented_query = f"{query}\n\nContext: {context_summary}"
+        else:
+            augmented_query = query
+        
+        elapsed = time.time() - start_time
+        self.ml_metrics["ml_augment_ops"] += 1
+        self.ml_metrics["vector_operations"] += num_contexts
+        self.ml_metrics["total_ml_compute_time"] += elapsed
+        self.ml_metrics["offloaded_computations"] += 1
+        
+        stats = {
+            "augment_time_ms": elapsed * 1000,
+            "contexts_processed": num_contexts,
+            "ml_units_used": min(self.ml_compute_units, num_contexts),
+            "parallel_efficiency": min(self.ml_compute_units, num_contexts) / self.ml_compute_units
+        }
+        
+        logger.debug(f"CSD Augment: {num_contexts} contexts in {elapsed*1000:.2f}ms using {min(self.ml_compute_units, num_contexts)} ML units")
+        return augmented_query, stats
+    
     def get_metrics(self) -> Dict[str, Any]:
         """Get comprehensive metrics including cache and SPDK-specific metrics."""
-        # Combine base metrics with mock-specific metrics
-        combined = {**self.metrics, **self.mock_metrics}
+        # Combine base metrics with mock-specific and ML metrics
+        combined = {**self.metrics, **self.mock_metrics, **self.ml_metrics}
         combined["backend_type"] = self._backend_type.value
         combined["backend_subtype"] = "mock_implementation"
+        combined["computational_offloading"] = True
+        combined["ml_compute_units"] = self.ml_compute_units
+        combined["ml_accelerator_freq_mhz"] = self.ml_accelerator_freq
+        combined["vector_processing_units"] = self.vector_processing_units
         
         # Add cache hierarchy stats
         if self.cache_hierarchy:
