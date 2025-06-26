@@ -36,7 +36,7 @@ class HNSWVectorDB(VectorDB):
         for idx, score in zip(indices[0], scores[0]):
             if idx >= 0:
                 results.append({
-                    "chunk": self.chunks[idx],
+                    "content": self.chunks[idx],
                     "metadata": self.metadata[idx],
                     "score": float(score),
                 })

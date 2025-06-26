@@ -11,7 +11,8 @@ class IVFPQVectorDB(VectorDB):
     def __init__(self, dimension: int, nlist: int = 100, m: int = 8, nbits: int = 8):
         self.dimension = dimension
         self.nlist = nlist
-        self.m = m
+        # Ensure m is reasonable for dimension (FAISS requirement)
+        self.m = min(m, dimension // 4) if dimension >= 4 else 1
         self.nbits = nbits
         self.quantizer = faiss.IndexFlatIP(self.dimension)
         self.index = faiss.IndexIVFPQ(self.quantizer, self.dimension, self.nlist, self.m, self.nbits)
