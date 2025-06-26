@@ -299,6 +299,29 @@ print(f"Answer: {result['augmented_query']}")
 print(f"Latency: {result['processing_time']*1000:.1f}ms")
 ```
 
+### **1.1. Vector Database Selection**
+
+```python
+from enhanced_rag_csd.retrieval.vectordb_factory import VectorDBFactory
+
+# Choose from 8 different ANN algorithms
+available_types = VectorDBFactory.get_available_types()
+print(f"Available: {available_types}")
+# Output: ['faiss', 'incremental', 'ivf_flat', 'ivf_pq', 'hnsw', 'lsh', 'scann', 'ngt']
+
+# High-speed general purpose
+faiss_db = VectorDBFactory.create_vectordb("faiss", dimension=384)
+
+# High-accuracy graph-based
+hnsw_db = VectorDBFactory.create_vectordb("hnsw", dimension=384, m=16)
+
+# Memory-efficient hashing
+lsh_db = VectorDBFactory.create_vectordb("lsh", dimension=384, num_hashes=10)
+
+# Advanced learned quantization
+scann_db = VectorDBFactory.create_vectordb("scann", dimension=384, num_clusters=100)
+```
+
 ### **2. Next-Generation CSD Backend Usage**
 
 ```python
@@ -424,6 +447,7 @@ print(f"Total vectors: {stats['vector_store']['total_vectors']}")
 2. **📊 Drift Detection System**: KL divergence-based index quality monitoring  
 3. **⚡ Pipeline Parallelism**: Concurrent execution with workload adaptation
 4. **💾 Multi-Level Caching**: L1/L2/L3 hierarchy with 60% hit rates
+5. **🎯 Comprehensive Vector Databases**: 8 ANN algorithms covering all major categories
 
 ---
 
@@ -443,6 +467,11 @@ print(f"Total vectors: {stats['vector_store']['total_vectors']}")
 - **[Benchmark Usage Guide](docs/benchmark_usage_guide.md)**: Complete benchmark instructions
 - **[Custom Documents Guide](docs/custom_documents_guide.md)**: User document integration
 - **[Getting Started Guide](docs/getting_started.md)**: Detailed setup instructions
+
+### **Vector Database Documentation**
+- **[Comprehensive Vector Database Guide](docs/vector_database_comprehensive_guide.md)**: Complete guide to all 8 ANN algorithms
+- **[Algorithm Selection Guide](docs/vector_database_comprehensive_guide.md#algorithm-selection-guide)**: Choose the right algorithm for your use case
+- **[Performance Benchmarks](docs/vector_database_comprehensive_guide.md#performance-benchmarks)**: Detailed performance comparisons
 
 ### **Technical References**
 - **[Experiment Results Summary](docs/experiment_results_summary.md)**: Performance data
