@@ -180,7 +180,7 @@ logs/
 models/
 vectors/
 vector_db/
-enhanced_storage/
+storage/
 demo_vectors/
 *.db
 

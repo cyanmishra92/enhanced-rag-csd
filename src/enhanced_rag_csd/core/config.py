@@ -9,7 +9,7 @@ class PipelineConfig:
     """Configuration for enhanced pipeline."""
     # Storage paths
     vector_db_path: str
-    storage_path: str = "./enhanced_storage"
+    storage_path: str = "./storage/enhanced"
     
     # Model settings
     embedding_model: str = "sentence-transformers/all-MiniLM-L6-v2"

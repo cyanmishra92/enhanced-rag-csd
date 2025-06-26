@@ -13,6 +13,7 @@ import numpy as np
 
 from enhanced_rag_csd.core.encoder import Encoder
 from enhanced_rag_csd.retrieval.incremental_index import IncrementalVectorStore
+from enhanced_rag_csd.retrieval.vectordb_factory import VectorDBFactory
 from enhanced_rag_csd.core.augmentor import Augmentor
 from enhanced_rag_csd.core.csd_emulator import EnhancedCSDSimulator
 from enhanced_rag_csd.core.system_data_flow import SystemDataFlow, SystemDataFlowConfig

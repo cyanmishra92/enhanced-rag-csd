@@ -80,13 +80,13 @@ setup(
     python_requires=">=3.8",
     install_requires=install_requires,
     extras_require=extras_require,
-    entry_points={
-        "console_scripts": [
-            "enhanced-rag-csd=enhanced_rag_csd.cli:main",
-            "erag-benchmark=enhanced_rag_csd.benchmarks.cli:benchmark_main",
-            "erag-demo=enhanced_rag_csd.examples.demo:main",
-        ],
-    },
+    # entry_points={
+    #     "console_scripts": [
+    #         "enhanced-rag-csd=enhanced_rag_csd.cli:main",
+    #         "erag-benchmark=enhanced_rag_csd.benchmarks.cli:benchmark_main",
+    #         "erag-demo=enhanced_rag_csd.examples.demo:main",
+    #     ],
+    # },
     include_package_data=True,
     package_data={
         "enhanced_rag_csd": ["data/*.json", "data/*.yaml"],

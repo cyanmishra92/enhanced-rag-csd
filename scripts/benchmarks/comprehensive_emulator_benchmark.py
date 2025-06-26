@@ -13,8 +13,12 @@ import json
 from datetime import datetime
 from typing import Dict, List, Any, Tuple
 
-from src.enhanced_rag_csd.backends import CSDBackendManager, CSDBackendType
-from src.enhanced_rag_csd.utils.logger import get_logger
+import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
+
+from enhanced_rag_csd.backends import CSDBackendManager, CSDBackendType
+from enhanced_rag_csd.utils.logger import get_logger
 
 logger = get_logger(__name__)
 
