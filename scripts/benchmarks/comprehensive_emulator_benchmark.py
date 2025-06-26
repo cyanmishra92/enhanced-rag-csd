@@ -126,16 +126,21 @@ class EmulatorBenchmark:
             
             # 3. Similarity benchmark
             similarity_times = []
+            total_start_time = time.time()
             for i in range(query_iterations):
                 query = embeddings[i % num_embeddings]
                 candidates = np.random.choice(num_embeddings, 20, replace=False).tolist()
                 
                 start = time.time()
                 similarities = backend.compute_similarities(query, candidates)
-                similarity_times.append(time.time() - start)
+                elapsed = time.time() - start
+                if elapsed > 0:  # Prevent negative or zero timing
+                    similarity_times.append(elapsed)
             
-            avg_similarity_time = np.mean(similarity_times)
-            throughput = query_iterations / sum(similarity_times)
+            total_elapsed_time = time.time() - total_start_time
+            avg_similarity_time = np.mean(similarity_times) if similarity_times else 0.001
+            # Fix throughput calculation: use actual wall-clock time
+            throughput = query_iterations / total_elapsed_time if total_elapsed_time > 0 else 0
             
             # 4. ERA Pipeline benchmark
             era_times = []

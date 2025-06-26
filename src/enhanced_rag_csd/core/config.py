@@ -11,6 +11,9 @@ class PipelineConfig:
     vector_db_path: str
     storage_path: str = "./storage/enhanced"
     
+    # Vector database settings
+    vector_db: str = "incremental"  # Default vector database type
+    
     # Model settings
     embedding_model: str = "sentence-transformers/all-MiniLM-L6-v2"
     embedding_dim: int = 384
@@ -28,6 +31,7 @@ class PipelineConfig:
     
     # Pipeline settings
     enable_pipeline_parallel: bool = True
+    enable_system_data_flow: bool = False
     flexible_retrieval_interval: int = 3
     
     # Cache settings

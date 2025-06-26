@@ -15,6 +15,9 @@ class CSDBackendType(Enum):
     SPDK_EMULATOR = "spdk_emulator"
     MOCK_SPDK = "mock_spdk"
     
+    # Realistic CSD implementation
+    REALISTIC_CSD = "realistic_csd"              # Realistic CSD with proper offloading
+    
     # Next-generation emulator backends
     OPENCSD_EMULATOR = "opencsd_emulator"        # OpenCSD with eBPF computational offloading
     FEMU_SMARTSSD = "femu_smartssd"              # FEMU SmartSSD computational storage

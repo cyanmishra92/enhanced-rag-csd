@@ -37,6 +37,14 @@ class CSDBackendManager:
         # Enhanced simulator (always available)
         self._backends[CSDBackendType.ENHANCED_SIMULATOR] = EnhancedSimulatorBackend
         
+        # Realistic CSD backend (always available)
+        try:
+            from .realistic_csd_backend import RealisticCSDBackend
+            self._backends[CSDBackendType.REALISTIC_CSD] = RealisticCSDBackend
+            logger.info("Realistic CSD backend registered")
+        except ImportError as e:
+            logger.warning(f"Realistic CSD backend not available: {e}")
+        
         # SPDK emulator (conditional availability)
         try:
             from .spdk_emulator import SPDKEmulatorBackend

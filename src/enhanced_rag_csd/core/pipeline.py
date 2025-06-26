@@ -271,6 +271,89 @@ class EnhancedRAGPipeline:
         
         return result
     
+    def query_with_realistic_csd(self, 
+                                query: str,
+                                top_k: int = 5,
+                                use_generation: bool = True) -> Dict[str, Any]:
+        """
+        Process a query using realistic CSD architecture.
+        
+        This method properly implements computational storage where:
+        1. Encoding happens on CSD
+        2. Retrieval happens on CSD near data
+        3. Augmentation happens on CSD
+        4. Only generation happens on external accelerator
+        """
+        from enhanced_rag_csd.backends import CSDBackendManager, CSDBackendType
+        
+        start_time = time.time()
+        
+        try:
+            # Initialize realistic CSD backend
+            manager = CSDBackendManager()
+            csd_backend = manager.create_backend(
+                CSDBackendType.REALISTIC_CSD, 
+                {"vector_db_path": self.config.vector_db_path}
+            )
+            
+            # Store existing vectors on CSD if not already done
+            if hasattr(self.vector_store, 'get_all_vectors'):
+                vectors, metadata = self.vector_store.get_all_vectors()
+                if len(vectors) > 0:
+                    csd_backend.store_embeddings(vectors, metadata)
+            
+            # Process query using CSD for encode/retrieve/augment
+            if use_generation:
+                # Full pipeline with generation on accelerator
+                response, pipeline_stats = csd_backend.process_rag_query(query)
+                
+                result = {
+                    "augmented_query": response,
+                    "pipeline_stats": pipeline_stats,
+                    "csd_backend_info": csd_backend.get_backend_info(),
+                    "processing_stages": {
+                        "encoding": "CSD",
+                        "retrieval": "CSD", 
+                        "augmentation": "CSD",
+                        "generation": "External GPU"
+                    }
+                }
+            else:
+                # Only encode/retrieve/augment on CSD (no generation)
+                query_embedding, encoding_stats = csd_backend.encode_on_csd([query])
+                retrieved_contexts, retrieval_stats = csd_backend.retrieve_on_csd(query_embedding[0], top_k)
+                augmented_query, augmentation_stats = csd_backend.augment_on_csd(query, retrieved_contexts)
+                
+                result = {
+                    "augmented_query": augmented_query,
+                    "retrieved_contexts": retrieved_contexts,
+                    "encoding_stats": encoding_stats,
+                    "retrieval_stats": retrieval_stats,
+                    "augmentation_stats": augmentation_stats,
+                    "csd_backend_info": csd_backend.get_backend_info(),
+                    "processing_stages": {
+                        "encoding": "CSD",
+                        "retrieval": "CSD",
+                        "augmentation": "CSD",
+                        "generation": "Not performed"
+                    }
+                }
+            
+            # Record metrics
+            elapsed = time.time() - start_time
+            result["processing_time"] = elapsed
+            result["architecture"] = "Realistic CSD"
+            
+            self.metrics.record_timing("csd_query", elapsed)
+            self.metrics.record_count("csd_queries_processed")
+            
+            return result
+            
+        except Exception as e:
+            logger.error(f"Error in realistic CSD query processing: {e}")
+            # Fallback to regular processing
+            return self.query(query, top_k, True)
+    
     def _query_system_data_flow(self,
                                query: str,
                                top_k: int,

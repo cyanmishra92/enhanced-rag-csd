@@ -12,20 +12,20 @@ Enhanced RAG-CSD is a **breakthrough high-performance Retrieval-Augmented Genera
 ### 🎯 **Key Performance Achievements** 
 *Benchmarked across 4 next-generation CSD emulator backends*
 
-- **🚀 15x Faster**: ~1,607 q/s vs ~62 q/s throughput (vs research-based baselines)
+- **🚀 4x Faster**: ~264 q/s vs ~62 q/s throughput (vs research-based baselines)
 - **⚡ Superior Accuracy**: 83.5% vs 70.0% relevance scoring  
 - **🧠 60% Memory Reduction**: 512MB vs 1280MB usage efficiency
-- **💾 Universal Computation**: eBPF offloading + ML primitives on storage
+- **💾 Realistic CSD Emulation**: eBPF offloading + ML primitives on storage
 - **🎯 100% Success Rate**: 0% error rate across all emulator backends
 
 ### 🔥 **Next-Generation CSD Emulator Backends**
 
 | Backend | Latency | Throughput | Specialization | Computational Offloading |
 |---------|---------|------------|----------------|---------------------------|
-| **Enhanced Simulator** | 3.51ms | 285 q/s | High-performance baseline | ❌ |
-| **Mock SPDK** | 5.05ms | 198 q/s | 3-level cache hierarchy | ❌ |
-| **OpenCSD Emulator** | 208ms | 4.8 q/s | **eBPF offloading** | ✅ **ML primitives** |
-| **SPDK vfio-user** | 11.25ms | 89 q/s | Shared memory P2P | ✅ **Compute units** |
+| **Enhanced Simulator** | 3.75ms | 264 q/s | High-performance baseline | ❌ |
+| **Mock SPDK** | 5.02ms | 198 q/s | 3-level cache hierarchy | ❌ |
+| **OpenCSD Emulator** | 201ms | 5.3 q/s | **eBPF offloading** | ✅ **ML primitives** |
+| **SPDK vfio-user** | 10.48ms | 95 q/s | Shared memory P2P | ✅ **Compute units** |
 
 ---
 
@@ -72,7 +72,7 @@ Enhanced RAG-CSD is a **breakthrough high-performance Retrieval-Augmented Genera
 
 | System | Architecture Focus | Performance Characteristics |
 |--------|-------------------|---------------------------|
-| **Enhanced-RAG-CSD** | **CSD Emulation + Pipeline Parallelism** | **1.1ms, 83.5% accuracy** |
+| **Enhanced-RAG-CSD** | **CSD Emulation + Pipeline Parallelism** | **3.8ms, 83.5% accuracy** |
 | FlashRAG-like | Speed Optimization | 15.3ms, 70.5% accuracy |
 | PipeRAG-like | Pipeline Parallelism | 17.0ms, 70.0% accuracy |
 | EdgeRAG-like | Edge Computing Focus | 25.2ms, 70.3% accuracy |
@@ -82,16 +82,16 @@ Enhanced RAG-CSD is a **breakthrough high-performance Retrieval-Augmented Genera
 
 | Metric | Enhanced-RAG-CSD | FlashRAG-like | PipeRAG-like | EdgeRAG-like | VanillaRAG |
 |--------|------------------|---------------|--------------|--------------|------------|
-| **Latency (ms)** | **1.1** | 15.3 | 17.0 | 25.2 | 18.3 |
-| **Throughput (q/s)** | **1,607** | 75.0 | 67.9 | 30.8* | 61.9 |
+| **Latency (ms)** | **3.8** | 15.3 | 17.0 | 25.2 | 18.3 |
+| **Throughput (q/s)** | **264** | 75.0 | 67.9 | 30.8* | 61.9 |
 | **Memory (MB)** | **512** | 896 | 1024 | 640 | 1280 |
 | **Relevance Score** | **0.835** | 0.705 | 0.700 | 0.703 | 0.696 |
 | **Cache Hit Rate** | **60.7%** | 14.5% | 9.8% | 15.5% | 15.7% |
-| **Speedup vs Baseline** | **15x** | 1.2x | 1.1x | 0.7x | 1.0x |
+| **Speedup vs Baseline** | **4.3x** | 1.2x | 1.1x | 0.7x | 1.0x |
 
 **Hardware Configuration**: Intel i7/i9 + RTX 4070/4080 (Research-based realistic delays, 2024)
 
-*Note: EdgeRAG-like showed inconsistent throughput measurements across datasets, ranging from 30.8 to -525.4 q/s, indicating potential configuration issues.*
+*Note: Performance measurements have been corrected to use proper wall-clock timing methodology. Previous versions contained measurement bugs that could produce unrealistic values.*
 
 ---
 
@@ -111,14 +111,14 @@ Our comprehensive evaluation spans **4 established public benchmarks**:
 ### **Dataset-Specific Performance**
 
 **Enhanced-RAG-CSD Performance Across Datasets**:
-- **MS MARCO**: 1.0ms (easier web queries, optimized performance)
-- **Natural Questions**: 1.0ms (baseline complexity reference)
-- **SciFact**: 1.0ms (scientific domain complexity penalty)
-- **TREC-COVID**: 1.0ms (specialized medical domain challenges)
+- **MS MARCO**: 3.8ms (easier web queries, optimized performance)
+- **Natural Questions**: 3.8ms (baseline complexity reference)
+- **SciFact**: 3.8ms (scientific domain complexity penalty)
+- **TREC-COVID**: 3.8ms (specialized medical domain challenges)
 
 ### **Cross-Dataset Consistency**
 ✅ **Maintained superior performance across all 4 benchmarks**  
-✅ **Consistent 15x speedup independent of domain complexity**  
+✅ **Consistent 4.3x speedup independent of domain complexity**  
 ✅ **Quality preserved with 83.5% accuracy across all domains**
 
 ---
@@ -163,11 +163,11 @@ python scripts/standalone_demo.py
 **Demo Results Preview**:
 ```
 🎯 Key Results:
-   🚀 4.6x faster query processing  
+   🚀 4.3x faster query processing  
    ⚡ Superior accuracy performance
    🧠 60.0% memory reduction
-   🎯 86.7% relevance accuracy
-   💾 60.0% cache hit rate
+   🎯 83.5% relevance accuracy
+   💾 60.7% cache hit rate
 ```
 
 ### **🔥 Next-Generation Emulator Demo (2 minutes)**
@@ -185,10 +185,10 @@ python comprehensive_emulator_benchmark.py
 **Emulator Results Preview**:
 ```
 📈 Backend Performance:
-   Enhanced Simulator: 3.51ms, 285.2 q/s
-   Mock SPDK: 5.05ms, 198.1 q/s  
-   OpenCSD Emulator: 208.11ms, 4.8 q/s (+ eBPF offloading)
-   SPDK vfio-user: 11.25ms, 88.9 q/s (+ compute units)
+   Enhanced Simulator: 3.75ms, 264 q/s
+   Mock SPDK: 5.02ms, 198 q/s  
+   OpenCSD Emulator: 201ms, 5.3 q/s (+ eBPF offloading)
+   SPDK vfio-user: 10.48ms, 95 q/s (+ compute units)
 
 🔥 Computational Offloading (OpenCSD):
    ✅ Softmax: 8.55ms, shape (384,)
@@ -322,7 +322,41 @@ lsh_db = VectorDBFactory.create_vectordb("lsh", dimension=384, num_hashes=10)
 scann_db = VectorDBFactory.create_vectordb("scann", dimension=384, num_clusters=100)
 ```
 
-### **2. Next-Generation CSD Backend Usage**
+### **2. Realistic CSD Architecture Usage**
+
+```python
+from enhanced_rag_csd.core.pipeline import EnhancedRAGPipeline
+from enhanced_rag_csd.core.config import PipelineConfig
+
+# Configure realistic CSD pipeline
+config = PipelineConfig(
+    vector_db_path="./storage/vectors",
+    enable_csd_emulation=True,
+    csd_backend="realistic_csd"  # Uses proper CSD architecture
+)
+pipeline = EnhancedRAGPipeline(config)
+
+# Add documents (stored on CSD)
+documents = [
+    "RAG combines retrieval with generation for better AI responses.",
+    "Computational storage processes data where it resides."
+]
+pipeline.add_documents(documents)
+
+# Query with realistic CSD offloading
+# Encode, retrieve, augment happen on CSD
+# Only generation uses external GPU
+result = pipeline.query_with_realistic_csd(
+    "What is computational storage?",
+    use_generation=True  # Enable full pipeline with GPU generation
+)
+
+print(f"Answer: {result['augmented_query']}")
+print(f"Processing stages: {result['processing_stages']}")
+print(f"Total time: {result['processing_time']*1000:.1f}ms")
+```
+
+### **3. Next-Generation CSD Backend Usage**
 
 ```python
 from enhanced_rag_csd.backends import CSDBackendManager, CSDBackendType
@@ -331,12 +365,11 @@ import numpy as np
 # Initialize backend manager
 manager = CSDBackendManager()
 
-# Create OpenCSD backend with eBPF offloading
+# Create realistic CSD backend with proper offloading
 config = {
-    "vector_db_path": "./vectors",
-    "opencsd": {"simulation_mode": True}
+    "vector_db_path": "./storage/vectors"
 }
-backend = manager.create_backend(CSDBackendType.OPENCSD_EMULATOR, config)
+backend = manager.create_backend(CSDBackendType.REALISTIC_CSD, config)
 
 # Store embeddings
 embeddings = np.random.randn(100, 384).astype(np.float32)

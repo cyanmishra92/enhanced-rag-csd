@@ -419,7 +419,7 @@ class EnhancedBenchmarkRunner:
                 std_latency=np.std(latencies),
                 avg_memory=np.mean(memories),
                 cache_hit_rate=sum(cache_hits) / len(cache_hits) if cache_hits else 0,
-                throughput=1.0 / np.mean(latencies) if latencies else 0
+                throughput=len(latencies) / sum(latencies) if latencies and sum(latencies) > 0 else 0
             )
         
         return system_stats

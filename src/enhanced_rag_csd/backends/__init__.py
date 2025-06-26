@@ -10,6 +10,11 @@ from .enhanced_simulator import EnhancedSimulatorBackend
 from .backend_manager import CSDBackendManager
 
 try:
+    from .realistic_csd_backend import RealisticCSDBackend
+except ImportError:
+    RealisticCSDBackend = None
+
+try:
     from .mock_spdk import MockSPDKEmulatorBackend
 except ImportError:
     MockSPDKEmulatorBackend = None
@@ -34,6 +39,7 @@ __all__ = [
     'CSDBackendInterface',
     'CSDBackendType', 
     'EnhancedSimulatorBackend',
+    'RealisticCSDBackend',
     'CSDBackendManager',
     'MockSPDKEmulatorBackend',
     'OpenCSDBackend',
