@@ -1,0 +1,5 @@
+Workload,Traditional Latency (ms),CSD Latency (ms),Latency Improvement (%),Traditional Energy (J),CSD Energy (J),Energy Improvement (%),Traditional Data (GB),CSD Data (GB),Data Reduction (%)
+Light,0.36,0.34,5.1,0.001,0.001,21.2,1.000,0.001,99.9
+Medium,0.57,0.34,39.8,0.003,0.001,72.8,3.000,0.001,100.0
+Heavy,1.31,0.35,73.2,0.010,0.001,91.4,10.000,0.001,100.0
+Enterprise,4.47,0.37,91.8,0.040,0.001,97.6,40.000,0.001,100.0

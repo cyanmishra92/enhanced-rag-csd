@@ -1,0 +1,5 @@
+System,Rebuild Frequency,Rebuilds/Year,Downtime/Rebuild (min),Annual Compute Cost,Annual Downtime Cost,Annual Degradation Cost,Total Annual Cost,System Availability,Online Updates,Update Latency (ms)
+Traditional RAG,Every 7 days,52.1,30,"$3,337","$26,071","$1,095,000","$1,124,559",99.7%,No,N/A
+FlashRAG,Every 7 days,52.1,15,"$3,337","$13,036","$657,000","$673,523",99.9%,No,N/A
+EdgeRAG,Every 14 days,26.1,5,$417,"$2,173","$438,000","$440,740",100.0%,Yes,50
+CSD-Enhanced RAG,Every 365 days,1.0,0,$10,$0,$0,$160,100.0%,Yes,10

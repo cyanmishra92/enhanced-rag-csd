@@ -1,0 +1,8 @@
+CSD Type,Compute Architecture,Peak Performance (GOPS),Power (W),Power Efficiency (GOPS/W),Storage (TB),Memory BW (GB/s),PCIe BW (GB/s),Cost/TB ($),Encoding Throughput (ops/s),ML Optimized
+Samsung SmartSSD,FPGA,160,25,6.4,8.0,14.0,8.0,800,727,Yes
+SK Hynix CSD,ARM,210,15,14.0,4.0,12.8,8.0,600,955,Yes
+Xilinx Alveo CSD,FPGA,3700,150,24.7,16.0,77.0,32.0,"2,000",16818,Yes
+AMD Versal CSD,FPGA,1800,75,24.0,8.0,58.6,32.0,"1,500",8182,Yes
+Future ARM CSD,ARM,420,5,84.0,2.0,25.6,16.0,300,1909,Yes
+Custom ASIC CSD,ASIC,5000,200,25.0,32.0,100.0,64.0,"3,000",22727,Yes
+Traditional SSD,None,N/A,8,N/A,8.0,0.0,8.0,100,N/A,No
